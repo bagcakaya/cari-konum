@@ -11,8 +11,8 @@ import {
   sendProximityPushNotification
 } from './services/notifications';
 
-// 200 Metre Yaklaşma Eşiği (Metre)
-const PROXIMITY_THRESHOLD_METERS = 200;
+// Varsayılan Yaklaşma Eşiği (Metre) - Kullanıcı 100m olarak belirledi
+const DEFAULT_PROXIMITY_THRESHOLD = 100;
 // Bildirim bekleme süresi (Aynı cari için 30 dakika)
 const COOLDOWN_MS = 30 * 60 * 1000;
 
@@ -24,6 +24,7 @@ export default function App() {
   const [selectedCari, setSelectedCari] = useState(null);
   const [activeProximityAlert, setActiveProximityAlert] = useState(null);
   const [hasNotificationPermission, setHasNotificationPermission] = useState(false);
+  const [proximityThreshold, setProximityThreshold] = useState(DEFAULT_PROXIMITY_THRESHOLD);
 
   // Arama & Filtreleme Durumu
   const [searchQuery, setSearchQuery] = useState('');
@@ -166,15 +167,15 @@ export default function App() {
         cari.boylam
       );
 
-      // 200 metre esigi kontrolu
-      if (dist <= PROXIMITY_THRESHOLD_METERS) {
+      // Dinamik Yaklaşma Eşiği (Varsayılan 100 metre)
+      if (dist <= proximityThreshold) {
         const lastNotified = notificationCooldowns.current[cari.id];
         
         // Spam engelleme: Son 30 dakika icinde bildirim gitmediyse
         if (!lastNotified || now - lastNotified > COOLDOWN_MS) {
           notificationCooldowns.current[cari.id] = now;
 
-          console.log(`[Geofence] 200m içi cari algılandı: ${cari.ad} (${Math.round(dist)}m)`);
+          console.log(`[Geofence] ${proximityThreshold}m içi cari algılandı: ${cari.ad} (${Math.round(dist)}m)`);
 
           // 1. OneSignal / Web Push Bildirimi Gönder
           sendProximityPushNotification(cari, dist);
@@ -300,6 +301,8 @@ export default function App() {
         isRefreshing={isRefreshing}
         deferredPrompt={deferredPrompt}
         onInstallPWA={handleInstallPWA}
+        proximityThreshold={proximityThreshold}
+        setProximityThreshold={setProximityThreshold}
       />
 
       {/* Ana Harita Alanı */}
@@ -312,6 +315,7 @@ export default function App() {
           isSimulating={isSimulating}
           setIsSimulating={setIsSimulating}
           onSimulateLocation={handleSimulateLocation}
+          proximityThreshold={proximityThreshold}
         />
       </main>
 
@@ -326,13 +330,15 @@ export default function App() {
         setSearchQuery={setSearchQuery}
         isOpen={isListOpen}
         setIsOpen={setIsListOpen}
+        proximityThreshold={proximityThreshold}
       />
 
-      {/* 200 Metre Yaklaşma Bildirim Modalı (Evet / Hayır) */}
+      {/* Yaklaşma Bildirim Modalı (Evet / Hayır) */}
       <ProximityAlertModal
         alertData={activeProximityAlert}
         onYes={handleProximityYes}
         onNo={handleProximityNo}
+        proximityThreshold={proximityThreshold}
       />
 
       {/* Cari Borç - Alacak Detay Kartı */}

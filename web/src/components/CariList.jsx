@@ -11,7 +11,8 @@ export default function CariList({
   searchQuery,
   setSearchQuery,
   isOpen,
-  setIsOpen
+  setIsOpen,
+  proximityThreshold = 100
 }) {
   const isBorclu = (c) => c.bakiye > 0;
   const isAlacakli = (c) => c.bakiye < 0;
@@ -130,7 +131,7 @@ export default function CariList({
                         </span>
                         {cari.distance !== undefined && cari.distance !== Infinity && (
                           <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded flex items-center gap-1 ${
-                            cari.distance <= 200
+                            cari.distance <= proximityThreshold
                               ? 'bg-blue-900 text-blue-300 border border-blue-700 animate-pulse'
                               : 'bg-slate-700/50 text-slate-400'
                           }`}>

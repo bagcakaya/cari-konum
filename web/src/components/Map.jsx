@@ -10,7 +10,8 @@ export default function Map({
   onTestProximity,
   isSimulating,
   setIsSimulating,
-  onSimulateLocation
+  onSimulateLocation,
+  proximityThreshold = 100
 }) {
   const mapContainerRef = useRef(null);
   const mapInstanceRef = useRef(null);
@@ -89,10 +90,10 @@ export default function Map({
       userMarkerRef.current.setLatLng([lat, lng]);
     }
 
-    // 2. 200 Metre Yaricap Cemberi
+    // 2. Yaricap Cemberi (Varsayilan 100m)
     if (!userCircleRef.current) {
       userCircleRef.current = L.circle([lat, lng], {
-        radius: 200,
+        radius: proximityThreshold || 100,
         color: '#2563eb',
         fillColor: '#3b82f6',
         fillOpacity: 0.15,
@@ -101,8 +102,9 @@ export default function Map({
       }).addTo(map);
     } else {
       userCircleRef.current.setLatLng([lat, lng]);
+      userCircleRef.current.setRadius(proximityThreshold || 100);
     }
-  }, [userLocation]);
+  }, [userLocation, proximityThreshold]);
 
   // Carileri Haritaya Ciz
   useEffect(() => {

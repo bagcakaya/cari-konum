@@ -2,7 +2,7 @@ import React from 'react';
 import { MapPin, Navigation2, Check, X, Building2 } from 'lucide-react';
 import { formatDistance } from '../utils/distance';
 
-export default function ProximityAlertModal({ alertData, onYes, onNo }) {
+export default function ProximityAlertModal({ alertData, onYes, onNo, proximityThreshold = 100 }) {
   if (!alertData || !alertData.cari) return null;
 
   const { cari, distance } = alertData;
@@ -24,7 +24,7 @@ export default function ProximityAlertModal({ alertData, onYes, onNo }) {
         {/* Distance Badge */}
         <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-950/90 text-blue-300 border border-blue-800/80 text-xs font-semibold mb-3">
           <Navigation2 size={12} className="rotate-45" />
-          Yaklaşık {formatDistance(distance)} mesafede (200m Çapı İçi)
+          Yaklaşık {formatDistance(distance)} mesafede ({proximityThreshold}m Yarıçap İçi)
         </div>
 
         {/* Question Text */}

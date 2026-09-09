@@ -8,7 +8,9 @@ export default function Header({
   onRefreshData,
   isRefreshing,
   deferredPrompt,
-  onInstallPWA
+  onInstallPWA,
+  proximityThreshold,
+  setProximityThreshold
 }) {
   return (
     <header className="fixed top-0 left-0 right-0 z-[1000] bg-slate-900/90 border-b border-slate-800 backdrop-blur-md px-4 py-2.5 flex items-center justify-between shadow-lg">
@@ -27,7 +29,7 @@ export default function Header({
           <div className="flex items-center gap-2 text-[11px] text-slate-400">
             <span className="flex items-center gap-1">
               <span className={`w-1.5 h-1.5 rounded-full ${isTracking ? 'bg-emerald-400 animate-ping' : 'bg-amber-400'}`} />
-              <span className="text-slate-300 font-medium">{isTracking ? 'GPS Aktif (200m Takip)' : 'GPS Bekleniyor'}</span>
+              <span className="text-slate-300 font-medium">{isTracking ? `GPS Aktif (${proximityThreshold}m Takip)` : 'GPS Bekleniyor'}</span>
             </span>
           </div>
         </div>
@@ -35,6 +37,18 @@ export default function Header({
 
       {/* Sag Aksiyonlar */}
       <div className="flex items-center gap-1.5">
+        {/* Yarıçap Seçici (Varsayılan 100m) */}
+        <select
+          value={proximityThreshold}
+          onChange={(e) => setProximityThreshold(Number(e.target.value))}
+          className="bg-slate-800 hover:bg-slate-750 border border-slate-700 text-blue-400 text-xs font-bold rounded-xl px-2 py-1.5 outline-none cursor-pointer focus:border-blue-500 transition-colors shadow-sm"
+          title="Yakınlık Algılama Mesafesi"
+        >
+          <option value={50}>50m</option>
+          <option value={100}>100m</option>
+          <option value={150}>150m</option>
+          <option value={200}>200m</option>
+        </select>
         {/* PWA Yukle / Ana Ekrana Ekle Butonu */}
         {deferredPrompt && (
           <button
