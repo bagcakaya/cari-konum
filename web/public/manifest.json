@@ -1,24 +1,38 @@
 {
-  "name": "Cari Konum - Akıllı Saha & Bakiye Takip",
-  "short_name": "CariKonum",
-  "description": "200m yaklaşma bildirimli ve canlı bakiye taki̇pli mobil cari haritası",
+  "name": "CariRadar - Akıllı Saha & Bakiye Takip",
+  "short_name": "CariRadar",
+  "description": "100m yaklaşma bildirimli ve canlı bakiye taki̇pli mobil cari haritası",
+  "id": "/",
   "start_url": "/",
+  "scope": "/",
   "display": "standalone",
   "background_color": "#0f172a",
-  "theme_color": "#2563eb",
-  "orientation": "portrait-primary",
+  "theme_color": "#0f172a",
+  "orientation": "portrait",
   "icons": [
     {
       "src": "/icons/icon-192.png",
       "sizes": "192x192",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
     },
     {
       "src": "/icons/icon-512.png",
       "sizes": "512x512",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
     }
   ]
 }

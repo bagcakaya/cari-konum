@@ -84,3 +84,23 @@ self.addEventListener('push', (event) => {
     self.registration.showNotification(data.title || '📍 Cari Yakınında!', options)
   );
 });
+
+// Fetch dinleyici (Google Chrome WebAPK ve PWA yukleme zorunlulugu)
+self.addEventListener('fetch', (event) => {
+  // Sadece GET isteklerini onbellekten kontrol et
+  if (event.request.method !== 'GET') return;
+
+  event.respondWith(
+    caches.match(event.request).then((cachedResponse) => {
+      if (cachedResponse) {
+        return cachedResponse;
+      }
+      return fetch(event.request).catch(() => {
+        // Cevrimdisi durumunda ana sayfayi dondur
+        if (event.request.mode === 'navigate') {
+          return caches.match('/index.html');
+        }
+      });
+    })
+  );
+});

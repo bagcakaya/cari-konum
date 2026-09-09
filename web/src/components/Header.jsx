@@ -21,7 +21,7 @@ export default function Header({
         </div>
         <div>
           <h1 className="text-sm font-extrabold text-white leading-tight tracking-tight flex items-center gap-1.5">
-            Cari Konum
+            CariRadar
             <span className="text-[10px] font-normal px-1.5 py-0.2 rounded bg-blue-950 text-blue-400 border border-blue-800/80">
               POLATLAR2025
             </span>
