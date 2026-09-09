@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
-import { Search, MapPin, Navigation, ArrowDownLeft, ArrowUpRight, CheckCircle2, ChevronUp, ChevronDown } from 'lucide-react';
+import { Search, MapPin, Navigation, ArrowDownLeft, ArrowUpRight, CheckCircle2, ChevronUp, ChevronDown, Crosshair } from 'lucide-react';
 import { formatDistance, formatCurrency } from '../utils/distance';
 
 export default function CariList({
   cariler,
   onSelectCari,
+  onTestProximity,
   activeFilter,
   setActiveFilter,
   searchQuery,
@@ -163,6 +164,21 @@ export default function CariList({
                       <div className="text-[10px] text-slate-500">
                         {borclu ? 'Borç' : alacakli ? 'Alacak' : 'Kapalı'}
                       </div>
+
+                      {onTestProximity && cari.enlem && cari.boylam && (
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onTestProximity(cari);
+                            setIsOpen(false);
+                          }}
+                          title="200m Yakınlık Bildirimini Test Et"
+                          className="mt-1 px-2 py-0.5 rounded bg-amber-500/15 hover:bg-amber-500/25 text-amber-300 border border-amber-500/30 text-[10px] font-semibold flex items-center gap-1 transition-colors cursor-pointer"
+                        >
+                          <Crosshair size={10} className="text-amber-400" />
+                          <span>Test</span>
+                        </button>
+                      )}
                     </div>
                   </div>
                 </div>

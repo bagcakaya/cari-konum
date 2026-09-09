@@ -257,8 +257,34 @@ export default function App() {
     }
   };
 
+  // Belirli bir cari için 200m yaklaşma testini tetikle
+  const handleTestProximityForCari = (cari) => {
+    if (!cari || !cari.enlem || !cari.boylam) return;
+
+    // Kullanıcıyı bu carinin 50 metre yanına taşı
+    const testLat = cari.enlem + 0.0003;
+    const testLng = cari.boylam + 0.0003;
+
+    // Cooldown'u sıfırla ki bildirim anında tetiklensin
+    delete notificationCooldowns.current[cari.id];
+
+    // Varsa açık detay modalını kapat
+    setSelectedCari(null);
+
+    // Konumu güncelle
+    setUserLocation({ lat: testLat, lng: testLng, accuracy: 5 });
+    setIsTracking(true);
+
+    // Haritayı bu noktaya odakla
+    if (window.__mapInstance) {
+      window.__mapInstance.setView([testLat, testLng], 17, { animate: true });
+    }
+  };
+
   // Sanal GPS Belirleme (Test Modu)
   const handleSimulateLocation = (lat, lng) => {
+    // Haritaya tıklandığında cooldown'ları temizle ki yakındaki cari anında bildirim versin
+    notificationCooldowns.current = {};
     setUserLocation({ lat, lng, accuracy: 5 });
     setIsTracking(true);
   };
@@ -282,6 +308,7 @@ export default function App() {
           cariler={allCariler}
           userLocation={userLocation}
           onSelectCari={setSelectedCari}
+          onTestProximity={handleTestProximityForCari}
           isSimulating={isSimulating}
           setIsSimulating={setIsSimulating}
           onSimulateLocation={handleSimulateLocation}
@@ -292,6 +319,7 @@ export default function App() {
       <CariList
         cariler={filteredCariler}
         onSelectCari={setSelectedCari}
+        onTestProximity={handleTestProximityForCari}
         activeFilter={activeFilter}
         setActiveFilter={setActiveFilter}
         searchQuery={searchQuery}
@@ -311,6 +339,7 @@ export default function App() {
       <CariDetailModal
         cari={selectedCari}
         onClose={() => setSelectedCari(null)}
+        onTestProximity={handleTestProximityForCari}
       />
     </div>
   );

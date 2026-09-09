@@ -7,6 +7,7 @@ export default function Map({
   cariler,
   userLocation,
   onSelectCari,
+  onTestProximity,
   isSimulating,
   setIsSimulating,
   onSimulateLocation
@@ -17,21 +18,32 @@ export default function Map({
   const userCircleRef = useRef(null);
   const markersLayerRef = useRef(null);
 
+  const isSimulatingRef = useRef(isSimulating);
+  const onSimulateLocationRef = useRef(onSimulateLocation);
+
+  useEffect(() => {
+    isSimulatingRef.current = isSimulating;
+  }, [isSimulating]);
+
+  useEffect(() => {
+    onSimulateLocationRef.current = onSimulateLocation;
+  }, [onSimulateLocation]);
+
   // Haritayi ilk olusturma
   useEffect(() => {
     if (!mapContainerRef.current || mapInstanceRef.current) return;
 
     // Erzurum merkezli varsayilan harita
-    const defaultCenter = [39.905, 41.275];
+    const defaultCenter = [39.9086, 41.2769];
     const map = L.map(mapContainerRef.current, {
       center: defaultCenter,
-      zoom: 13,
+      zoom: 14,
       zoomControl: false,
     });
 
-    // Dark/Modern OpenStreetMap CartoDB Tiles (Hafif ve ucretsiz)
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
-      attribution: '&copy; <a href="https://carto.com/">CARTO</a> &copy; OpenStreetMap',
+    // Standart Ucretsiz OpenStreetMap Katmani (API Key gerektirmez)
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
       maxZoom: 19,
     }).addTo(map);
 
@@ -42,17 +54,19 @@ export default function Map({
     const markersLayer = L.layerGroup().addTo(map);
     markersLayerRef.current = markersLayer;
     mapInstanceRef.current = map;
+    window.__mapInstance = map;
 
     // Haritaya tiklandiginda (Simulasyon modu aciksa konum tasi)
     map.on('click', (e) => {
-      if (isSimulating && onSimulateLocation) {
-        onSimulateLocation(e.latlng.lat, e.latlng.lng);
+      if (isSimulatingRef.current && onSimulateLocationRef.current) {
+        onSimulateLocationRef.current(e.latlng.lat, e.latlng.lng);
       }
     });
 
     return () => {
       map.remove();
       mapInstanceRef.current = null;
+      window.__mapInstance = null;
     };
   }, []);
 
@@ -128,19 +142,32 @@ export default function Map({
             <strong style="font-size: 12px; color: ${bgColor};">${formatCurrency(Math.abs(cari.bakiye))}</strong>
           </div>
           
-          <button id="btn-view-${cari.id}" style="width: 100%; margin-top: 8px; padding: 6px 8px; background: #2563eb; color: white; border: none; border-radius: 6px; font-size: 11px; font-weight: 600; cursor: pointer;">
-            Detay ve Borç Bilgisi
-          </button>
+          <div style="display: flex; gap: 4px; margin-top: 8px;">
+            <button id="btn-view-${cari.id}" style="flex: 1; padding: 6px 8px; background: #2563eb; color: white; border: none; border-radius: 6px; font-size: 11px; font-weight: 600; cursor: pointer;">
+              Detay Gör
+            </button>
+            <button id="btn-test-${cari.id}" style="flex: 1; padding: 6px 8px; background: #d97706; color: white; border: none; border-radius: 6px; font-size: 11px; font-weight: 600; cursor: pointer;" title="200m Bildirimini Test Et">
+              🎯 200m Test
+            </button>
+          </div>
         </div>
       `;
 
       marker.bindPopup(popupContent);
 
       marker.on('popupopen', () => {
-        const btn = document.getElementById(`btn-view-${cari.id}`);
-        if (btn) {
-          btn.onclick = () => {
+        const btnView = document.getElementById(`btn-view-${cari.id}`);
+        if (btnView) {
+          btnView.onclick = () => {
             onSelectCari(cari);
+            marker.closePopup();
+          };
+        }
+
+        const btnTest = document.getElementById(`btn-test-${cari.id}`);
+        if (btnTest) {
+          btnTest.onclick = () => {
+            if (onTestProximity) onTestProximity(cari);
             marker.closePopup();
           };
         }
@@ -148,7 +175,7 @@ export default function Map({
 
       marker.addTo(markersLayer);
     });
-  }, [cariler, onSelectCari]);
+  }, [cariler, onSelectCari, onTestProximity]);
 
   // Haritayi kullanici konumuna odakla
   const handleRecenter = () => {

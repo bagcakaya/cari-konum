@@ -1,8 +1,8 @@
 import React from 'react';
 import { formatCurrency } from '../utils/distance';
-import { X, MapPin, Phone, User, Navigation, AlertCircle, ArrowUpRight, ArrowDownLeft, CheckCircle2 } from 'lucide-react';
+import { X, MapPin, Phone, User, Navigation, AlertCircle, ArrowUpRight, ArrowDownLeft, CheckCircle2, Crosshair } from 'lucide-react';
 
-export default function CariDetailModal({ cari, onClose }) {
+export default function CariDetailModal({ cari, onClose, onTestProximity }) {
   if (!cari) return null;
 
   const isBorclu = cari.bakiye > 0;
@@ -121,6 +121,16 @@ export default function CariDetailModal({ cari, onClose }) {
                   </a>
                 )}
               </div>
+            )}
+            {/* 200m Test Butonu */}
+            {onTestProximity && cari.enlem && cari.boylam && (
+              <button
+                onClick={() => onTestProximity(cari)}
+                className="w-full py-2.5 px-3 rounded-xl bg-amber-500/15 hover:bg-amber-500/25 active:bg-amber-500/30 text-amber-300 border border-amber-500/30 text-xs font-semibold flex items-center justify-center gap-2 transition-all cursor-pointer shadow-sm"
+              >
+                <Crosshair size={15} className="text-amber-400" />
+                <span>🎯 Bu Carinin 200m Yakınlık Bildirimini Test Et</span>
+              </button>
             )}
           </div>
 
