@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="100%" height="100%">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#2563eb" />
+      <stop offset="100%" stop-color="#1e3a8a" />
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#000" flood-opacity="0.3"/>
+    </filter>
+  </defs>
+  
+  <!-- Background with rounded corners -->
+  <rect width="512" height="512" rx="110" fill="url(#bgGrad)" />
+  
+  <!-- Outer Glow Pin -->
+  <g filter="url(#shadow)">
+    <!-- Pin Body -->
+    <path d="M256 90 C180 90 120 150 120 226 C120 310 236 410 248 420 C252 424 260 424 264 420 C276 410 392 310 392 226 C392 150 332 90 256 90 Z" fill="#ffffff"/>
+    <!-- Inner Pin Dot -->
+    <circle cx="256" cy="226" r="55" fill="#ef4444" />
+    <!-- Center symbol (TL Currency / Radar wave) -->
+    <circle cx="256" cy="226" r="22" fill="#ffffff" />
+  </g>
+</svg>
