@@ -10,6 +10,7 @@ import CariListDrawer from './components/CariListDrawer';
 import CariDetailModal from './components/CariDetailModal';
 import ProximityAlertModal from './components/ProximityAlertModal';
 import { calculateDistance } from './utils/distance';
+import localCariler from './assets/cariler.json';
 
 const GEOFENCE_TASK_NAME = 'CARI_RADAR_GEOFENCE_TASK';
 const DEFAULT_PROXIMITY = 50; // 50 metre
@@ -44,7 +45,7 @@ try {
 }
 
 export default function App() {
-  const [allCariler, setAllCariler] = useState([]);
+  const [allCariler, setAllCariler] = useState(localCariler.cariler || []);
   const [userLocation, setUserLocation] = useState(null);
   const [isTracking, setIsTracking] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);

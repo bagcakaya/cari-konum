@@ -1,29 +1,29 @@
-﻿import React, { useRef, useEffect } from 'react';
-import { StyleSheet, View } from 'react-native';
+import React, { useRef, useEffect, useState } from 'react';
+import { StyleSheet, View, ActivityIndicator } from 'react-native';
 import { WebView } from 'react-native-webview';
 
-export default function MapWebView({
-  cariler = [],
-  userLocation,
-  proximityThreshold = 50,
-  onSelectCari,
-  onTestProximity,
-  onSimulateLocation,
-  isSimulating = false,
-}) {
-  const webViewRef = useRef(null);
-
-  // Cariler ve kullanici konumu JSON serilestirmesi
-  const mapHtml = `
+const MAP_HTML = `
 <!DOCTYPE html>
 <html>
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
   <style>
-    body, html, #map { margin: 0; padding: 0; width: 100%; height: 100%; background: #0f172a; }
+    * { box-sizing: border-box; }
+    html, body {
+      margin: 0; padding: 0;
+      width: 100%; height: 100%;
+      overflow: hidden;
+      background: #0f172a;
+    }
+    #map {
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      width: 100%; height: 100%;
+      background: #0f172a;
+    }
     .user-pulse {
       position: relative;
       width: 20px;
@@ -63,19 +63,20 @@ export default function MapWebView({
   <div id="map"></div>
   <script>
     var map = L.map('map', { zoomControl: false }).setView([39.9086, 41.2769], 14);
+    
     L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
       maxZoom: 19,
-      attribution: '© OpenStreetMap'
+      attribution: '&copy; OpenStreetMap'
     }).addTo(map);
+
+    setTimeout(function() { map.invalidateSize(); }, 300);
+    setTimeout(function() { map.invalidateSize(); }, 1000);
 
     var userMarker = null;
     var userCircle = null;
     var markersLayer = L.layerGroup().addTo(map);
+    var proximityRadius = 50;
 
-    var isSimulating = ${isSimulating};
-    var proximityRadius = ${proximityThreshold || 50};
-
-    // Harita tiklama
     map.on('click', function(e) {
       if (window.ReactNativeWebView) {
         window.ReactNativeWebView.postMessage(JSON.stringify({
@@ -92,9 +93,15 @@ export default function MapWebView({
       }
     }
 
-    // Carileri ciz
-    function renderCariler(list) {
+    function setRadius(r) {
+      proximityRadius = r || 50;
+      if (userCircle) userCircle.setRadius(proximityRadius);
+    }
+
+    function setCariler(list) {
       markersLayer.clearLayers();
+      if (!list || !list.length) return;
+      
       list.forEach(function(c) {
         if (!c.enlem || !c.boylam) return;
         var isBorclu = c.bakiye > 0;
@@ -121,17 +128,18 @@ export default function MapWebView({
           '</div>' +
           '<div style="display:flex;gap:6px;margin-top:10px;">' +
             '<button onclick="postAppMessage(\'SELECT_CARI\', ' + c.id + ')" class="btn-action" style="background:#2563eb;">Detay</button>' +
-            '<button onclick="postAppMessage(\'TEST_CARI\', ' + c.id + ')" class="btn-action" style="background:#d97706;">🎯 ' + proximityRadius + 'm Test</button>' +
+            '<button onclick="postAppMessage(\'TEST_CARI\', ' + c.id + ')" class="btn-action" style="background:#d97706;">🎯 Test</button>' +
           '</div>' +
         '</div>';
 
         m.bindPopup(popupContent);
         markersLayer.addLayer(m);
       });
+      map.invalidateSize();
     }
 
-    // Kullanici konumu guncelle
     function updateUserLoc(lat, lng, radius) {
+      proximityRadius = radius || proximityRadius || 50;
       if (!userMarker) {
         var userIcon = L.divIcon({
           className: 'user-pulse',
@@ -140,7 +148,7 @@ export default function MapWebView({
         });
         userMarker = L.marker([lat, lng], { icon: userIcon, zIndexOffset: 1000 }).addTo(map);
         userCircle = L.circle([lat, lng], {
-          radius: radius || 50,
+          radius: proximityRadius,
           color: '#2563eb',
           fillColor: '#3b82f6',
           fillOpacity: 0.15,
@@ -151,23 +159,47 @@ export default function MapWebView({
       } else {
         userMarker.setLatLng([lat, lng]);
         userCircle.setLatLng([lat, lng]);
-        userCircle.setRadius(radius || 50);
+        userCircle.setRadius(proximityRadius);
       }
     }
 
-    // Ilk yukleme
-    var initialCariler = ${JSON.stringify(cariler.slice(0, 300))};
-    renderCariler(initialCariler);
-
-    ${userLocation ? `updateUserLoc(${userLocation.latitude}, ${userLocation.longitude}, ${proximityThreshold || 50});` : ''}
+    if (window.ReactNativeWebView) {
+      window.ReactNativeWebView.postMessage(JSON.stringify({ type: 'MAP_READY' }));
+    }
   </script>
 </body>
 </html>
-  `;
+`;
 
-  // Konum degistiginde webview'a komut gonder
+export default function MapWebView({
+  cariler = [],
+  userLocation,
+  proximityThreshold = 50,
+  onSelectCari,
+  onTestProximity,
+  onSimulateLocation,
+  isSimulating = false,
+}) {
+  const webViewRef = useRef(null);
+  const [isMapReady, setIsMapReady] = useState(false);
+
+  // Harita hazır olduğunda veya cariler güncellendiğinde carileri aktar
   useEffect(() => {
-    if (webViewRef.current && userLocation) {
+    if (isMapReady && webViewRef.current) {
+      const validCariler = cariler.filter((c) => c.enlem && c.boylam);
+      const js = `
+        if (typeof setCariler === 'function') {
+          setCariler(${JSON.stringify(validCariler)});
+        }
+        true;
+      `;
+      webViewRef.current.injectJavaScript(js);
+    }
+  }, [isMapReady, cariler]);
+
+  // Konum değiştiğinde aktar
+  useEffect(() => {
+    if (isMapReady && webViewRef.current && userLocation) {
       const js = `
         if (typeof updateUserLoc === 'function') {
           updateUserLoc(${userLocation.latitude}, ${userLocation.longitude}, ${proximityThreshold || 50});
@@ -176,12 +208,14 @@ export default function MapWebView({
       `;
       webViewRef.current.injectJavaScript(js);
     }
-  }, [userLocation, proximityThreshold]);
+  }, [isMapReady, userLocation, proximityThreshold]);
 
   const handleMessage = (event) => {
     try {
       const data = JSON.parse(event.nativeEvent.data);
-      if (data.type === 'SELECT_CARI') {
+      if (data.type === 'MAP_READY') {
+        setIsMapReady(true);
+      } else if (data.type === 'SELECT_CARI') {
         const found = cariler.find((c) => String(c.id) === String(data.data));
         if (found && onSelectCari) onSelectCari(found);
       } else if (data.type === 'TEST_CARI') {
@@ -202,12 +236,20 @@ export default function MapWebView({
       <WebView
         ref={webViewRef}
         originWhitelist={['*']}
-        source={{ html: mapHtml }}
+        source={{ html: MAP_HTML, baseUrl: 'https://cdnjs.cloudflare.com' }}
         style={styles.webview}
         onMessage={handleMessage}
         javaScriptEnabled={true}
         domStorageEnabled={true}
         startInLoadingState={true}
+        scalesPageToFit={true}
+        mixedContentMode="always"
+        androidLayerType="hardware"
+        renderLoading={() => (
+          <View style={styles.loadingContainer}>
+            <ActivityIndicator size="large" color="#3b82f6" />
+          </View>
+        )}
       />
     </View>
   );
@@ -220,6 +262,16 @@ const styles = StyleSheet.create({
   },
   webview: {
     flex: 1,
+    backgroundColor: '#0f172a',
+  },
+  loadingContainer: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    justifyContent: 'center',
+    alignItems: 'center',
     backgroundColor: '#0f172a',
   },
 });
