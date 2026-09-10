@@ -12,7 +12,7 @@ export default function CariList({
   setSearchQuery,
   isOpen,
   setIsOpen,
-  proximityThreshold = 100
+  proximityThreshold = 50
 }) {
   const isBorclu = (c) => c.bakiye > 0;
   const isAlacakli = (c) => c.bakiye < 0;
@@ -139,6 +139,11 @@ export default function CariList({
                             {formatDistance(cari.distance)}
                           </span>
                         )}
+                        {(!cari.enlem || !cari.boylam) && (
+                          <span className="text-[10px] font-medium px-1.5 py-0.5 rounded bg-slate-800/80 text-slate-400 border border-slate-700/50">
+                            Haritada Yok (Açık Adres Eksik)
+                          </span>
+                        )}
                       </div>
 
                       <h4 className="text-sm font-bold text-slate-100 truncate group-hover:text-blue-400 transition-colors">
@@ -173,7 +178,7 @@ export default function CariList({
                             onTestProximity(cari);
                             setIsOpen(false);
                           }}
-                          title="200m Yakınlık Bildirimini Test Et"
+                          title={`${proximityThreshold || 50}m Yakınlık Bildirimini Test Et`}
                           className="mt-1 px-2 py-0.5 rounded bg-amber-500/15 hover:bg-amber-500/25 text-amber-300 border border-amber-500/30 text-[10px] font-semibold flex items-center gap-1 transition-colors cursor-pointer"
                         >
                           <Crosshair size={10} className="text-amber-400" />

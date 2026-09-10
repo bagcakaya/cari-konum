@@ -2,7 +2,7 @@ import React from 'react';
 import { MapPin, Navigation2, Check, X, Building2 } from 'lucide-react';
 import { formatDistance } from '../utils/distance';
 
-export default function ProximityAlertModal({ alertData, onYes, onNo, proximityThreshold = 100 }) {
+export default function ProximityAlertModal({ alertData, onYes, onNo, proximityThreshold = 50 }) {
   if (!alertData || !alertData.cari) return null;
 
   const { cari, distance } = alertData;

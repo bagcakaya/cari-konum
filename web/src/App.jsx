@@ -11,8 +11,8 @@ import {
   sendProximityPushNotification
 } from './services/notifications';
 
-// Varsayılan Yaklaşma Eşiği (Metre) - Kullanıcı 100m olarak belirledi
-const DEFAULT_PROXIMITY_THRESHOLD = 100;
+// Varsayılan Yaklaşma Eşiği (Metre) - Kullanıcı isteği ile 50m yapıldı
+const DEFAULT_PROXIMITY_THRESHOLD = 50;
 // Bildirim bekleme süresi (Aynı cari için 30 dakika)
 const COOLDOWN_MS = 30 * 60 * 1000;
 
@@ -262,9 +262,9 @@ export default function App() {
   const handleTestProximityForCari = (cari) => {
     if (!cari || !cari.enlem || !cari.boylam) return;
 
-    // Kullanıcıyı bu carinin 50 metre yanına taşı
-    const testLat = cari.enlem + 0.0003;
-    const testLng = cari.boylam + 0.0003;
+    // Kullanıcıyı bu carinin 20 metre yanına taşı (50m içine girsin)
+    const testLat = cari.enlem + 0.00015;
+    const testLng = cari.boylam + 0.00015;
 
     // Cooldown'u sıfırla ki bildirim anında tetiklensin
     delete notificationCooldowns.current[cari.id];

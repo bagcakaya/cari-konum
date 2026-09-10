@@ -9,11 +9,11 @@
 const { execSync } = require('child_process');
 const path = require('path');
 const fs = require('fs');
-const { run: runGeocoder } = require('./geocoder');
+const { main: runPrecisionGeocoder } = require('./precision_geocoder');
 
 async function syncAll() {
   console.log('====================================================');
-  console.log('   CARI KONUM - CANLI VERİ SENKRONİZASYONU');
+  console.log('   CARIRADAR - HASSAS VERİ & KONUM SENKRONİZASYONU');
   console.log('====================================================');
   console.log(`Zaman: ${new Date().toLocaleString('tr-TR')}\n`);
 
@@ -30,9 +30,9 @@ async function syncAll() {
     process.exit(1);
   }
 
-  // Adım 2: Adres Normalizasyonu & Geocoding
-  console.log('\n[2/3] Adresler ve koordinatlar senkronize ediliyor...');
-  const cariler = await runGeocoder({ maxNewQueries: 100 });
+  // Adım 2: Hassas Adres Geocoding (Açık adresler eşleştirilir, '.' olanlar hariç tutulur)
+  console.log('\n[2/3] Açık adresler taranıyor ve hassas koordinatlar eşitleniyor...');
+  await runPrecisionGeocoder();
 
   // Adım 3: Vercel Cloud Push (Opsiyonel)
   const envPath = path.join(__dirname, '.env');
@@ -46,10 +46,12 @@ async function syncAll() {
   if (syncUrl) {
     console.log(`\n[3/3] Vercel bulut sistemine aktarılıyor (${syncUrl})...`);
     try {
+      const carilerFile = path.join(__dirname, 'output', 'cariler.json');
+      const carilerData = fs.existsSync(carilerFile) ? JSON.parse(fs.readFileSync(carilerFile, 'utf8')) : { cariler: [] };
       const payload = JSON.stringify({
         secret: syncSecret,
         updatedAt: new Date().toISOString(),
-        cariler: cariler
+        cariler: carilerData.cariler || []
       });
 
       const res = await fetch(syncUrl, {

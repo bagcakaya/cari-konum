@@ -11,7 +11,7 @@ export default function Map({
   isSimulating,
   setIsSimulating,
   onSimulateLocation,
-  proximityThreshold = 100
+  proximityThreshold = 50
 }) {
   const mapContainerRef = useRef(null);
   const mapInstanceRef = useRef(null);
@@ -90,10 +90,10 @@ export default function Map({
       userMarkerRef.current.setLatLng([lat, lng]);
     }
 
-    // 2. Yaricap Cemberi (Varsayilan 100m)
+    // 2. Yaricap Cemberi (Varsayilan 50m)
     if (!userCircleRef.current) {
       userCircleRef.current = L.circle([lat, lng], {
-        radius: proximityThreshold || 100,
+        radius: proximityThreshold || 50,
         color: '#2563eb',
         fillColor: '#3b82f6',
         fillOpacity: 0.15,
@@ -102,7 +102,7 @@ export default function Map({
       }).addTo(map);
     } else {
       userCircleRef.current.setLatLng([lat, lng]);
-      userCircleRef.current.setRadius(proximityThreshold || 100);
+      userCircleRef.current.setRadius(proximityThreshold || 50);
     }
   }, [userLocation, proximityThreshold]);
 
@@ -148,8 +148,8 @@ export default function Map({
             <button id="btn-view-${cari.id}" style="flex: 1; padding: 6px 8px; background: #2563eb; color: white; border: none; border-radius: 6px; font-size: 11px; font-weight: 600; cursor: pointer;">
               Detay Gör
             </button>
-            <button id="btn-test-${cari.id}" style="flex: 1; padding: 6px 8px; background: #d97706; color: white; border: none; border-radius: 6px; font-size: 11px; font-weight: 600; cursor: pointer;" title="200m Bildirimini Test Et">
-              🎯 200m Test
+            <button id="btn-test-${cari.id}" style="flex: 1; padding: 6px 8px; background: #d97706; color: white; border: none; border-radius: 6px; font-size: 11px; font-weight: 600; cursor: pointer;" title="${proximityThreshold || 50}m Bildirimini Test Et">
+              🎯 ${proximityThreshold || 50}m Test
             </button>
           </div>
         </div>
@@ -220,7 +220,7 @@ export default function Map({
       {isSimulating && (
         <div className="absolute top-4 left-4 right-16 z-[500] bg-amber-500/95 text-slate-950 px-3 py-2 rounded-xl text-xs font-semibold shadow-lg flex items-center gap-2 backdrop-blur-sm animate-pulse">
           <Crosshair size={16} className="shrink-0" />
-          <span>Test Modu Aktif: Haritada herhangi bir noktaya tıklayarak konumunuzu taşıyın (200m bildirimini test edin).</span>
+          <span>Test Modu Aktif: Haritada herhangi bir noktaya tıklayarak konumunuzu taşıyın ({proximityThreshold || 50}m bildirimini test edin).</span>
         </div>
       )}
     </div>
