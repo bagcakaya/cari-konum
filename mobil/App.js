@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { StyleSheet, View, StatusBar, Vibration } from 'react-native';
 import * as Location from 'expo-location';
 import * as TaskManager from 'expo-task-manager';
-import * as Notifications from 'expo-notifications';
+import { SafeNotifications } from './utils/notifications';
 
 import Header from './components/Header';
 import MapWebView from './components/MapWebView';
@@ -17,15 +17,7 @@ const COOLDOWN_MS = 30 * 60 * 1000; // 30 dakika
 
 // Bildirim Ayarları (Expo Go korumalı)
 try {
-  if (Notifications && Notifications.setNotificationHandler) {
-    Notifications.setNotificationHandler({
-      handleNotification: async () => ({
-        shouldShowAlert: true,
-        shouldPlaySound: true,
-        shouldSetBadge: false,
-      }),
-    });
-  }
+  SafeNotifications.setNotificationHandler();
 } catch (e) {
   console.warn('[Notification] Handler başlatılamadı:', e);
 }
@@ -40,19 +32,8 @@ try {
     if (eventType === Location.GeofencingEventType.Enter) {
       console.log('[Geofence] 50m bölgesine girildi:', region.identifier);
       try {
-        Vibration.vibrate([0, 400, 200, 400]);
-        if (Notifications && Notifications.scheduleNotificationAsync) {
-          Notifications.scheduleNotificationAsync({
-            content: {
-              title: '📍 Cari Yakınında (50m)!',
-              body: 'Kayıtlı bir firmanın 50 metre yakınına geldiniz. Bakiye kartını görmek için dokunun.',
-              sound: true,
-              vibrate: [0, 300, 200, 300],
-              data: { cariId: region.identifier },
-            },
-            trigger: null,
-          });
-        }
+        Vibration.vibrate([0, 500, 200, 500]);
+        SafeNotifications.triggerProximityAlert({ id: region.identifier }, 50);
       } catch (err) {
         console.warn('Geofence bildirim hatası:', err.message);
       }
@@ -173,9 +154,9 @@ export default function App() {
     // Bildirime tıklandığında ilgili cariyi aç
     let responseSub = null;
     try {
-      if (Notifications && Notifications.addNotificationResponseReceivedListener) {
-        responseSub = Notifications.addNotificationResponseReceivedListener((response) => {
-          const cariId = response.notification?.request?.content?.data?.cariId;
+      if (SafeNotifications && SafeNotifications.addNotificationResponseReceivedListener) {
+        responseSub = SafeNotifications.addNotificationResponseReceivedListener((response) => {
+          const cariId = response?.notification?.request?.content?.data?.cariId;
           if (cariId) {
             const found = allCariler.find((c) => String(c.id) === String(cariId));
             if (found) setSelectedCari(found);
@@ -212,23 +193,11 @@ export default function App() {
         if (!last || now - last > COOLDOWN_MS) {
           notificationCooldowns.current[cari.id] = now;
 
-          // Sesli ve titreşimli push bildirimi
+          // Donanımsal Titreşim ve Yakınlık Uyarısı
           try {
-            Vibration.vibrate([0, 350, 150, 350]);
-            if (Notifications && Notifications.scheduleNotificationAsync) {
-              Notifications.scheduleNotificationAsync({
-                content: {
-                  title: `📍 ${cari.ad}`,
-                  body: `${cari.ad} firmasına ${dist}m yaklaştınız. Detay için dokunun.`,
-                  sound: true,
-                  vibrate: [0, 250, 200, 250],
-                  data: { cariId: cari.id },
-                },
-                trigger: null,
-              });
-            }
+            SafeNotifications.triggerProximityAlert(cari, dist);
           } catch (e) {
-            console.warn('Bildirim planlanamadı:', e.message);
+            console.warn('Bildirim hatası:', e.message);
           }
 
           // Uygulama içi modal
