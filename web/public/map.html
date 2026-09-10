@@ -116,11 +116,11 @@
       zoomControl: false
     });
 
-    // CartoDB Voyager Katmanı (Mobil için hızlı, şık ve engelsiz)
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
-      subdomains: 'abcd',
+    // Temiz ve Ücretsiz OpenStreetMap Katmanı (API Key veya Filigran Gerektirmez)
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      subdomains: ['a', 'b', 'c'],
       maxZoom: 19,
-      attribution: '&copy; OpenStreetMap, &copy; CARTO'
+      attribution: '&copy; OpenStreetMap'
     }).addTo(map);
 
     setTimeout(function() { map.invalidateSize(); }, 300);

@@ -109,11 +109,11 @@ const createMapHtml = (initialCariler = []) => `
     var defaultCenter = [39.9086, 41.2769];
     var map = L.map('map', { zoomControl: false }).setView(defaultCenter, 14);
 
-    // CartoDB Voyager Katmanı (Mobil WebView için engelsiz, hızlı ve temiz)
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
-      subdomains: 'abcd',
+    // Temiz ve Ücretsiz OpenStreetMap Katmanı (API Key veya Filigran Gerektirmez)
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      subdomains: ['a', 'b', 'c'],
       maxZoom: 19,
-      attribution: '&copy; OpenStreetMap, &copy; CARTO'
+      attribution: '&copy; OpenStreetMap'
     }).addTo(map);
 
     setTimeout(function() { map.invalidateSize(); }, 200);
