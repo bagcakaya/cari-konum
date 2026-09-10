@@ -42,10 +42,10 @@ try {
       return;
     }
     if (eventType === Location.GeofencingEventType.Enter) {
-      console.log('[Geofence] 50m bölgesine girildi:', region.identifier);
+      console.log('[Geofence] Bölgeye girildi:', region.identifier);
       try {
-        Vibration.vibrate([0, 500, 200, 500]);
-        SafeNotifications.triggerProximityAlert({ id: region.identifier }, 50);
+        const foundCari = (localCariler?.cariler || []).find((c) => String(c.id) === String(region.identifier)) || { id: region.identifier };
+        SafeNotifications.triggerProximityAlert(foundCari, region.radius || DEFAULT_PROXIMITY);
       } catch (err) {
         console.warn('Geofence bildirim hatası:', err.message);
       }

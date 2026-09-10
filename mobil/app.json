@@ -4,7 +4,7 @@
     "slug": "cari-radar",
     "owner": "edutakip",
     "scheme": "cariradar",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "dark",
@@ -17,7 +17,7 @@
       "bundleIdentifier": "com.edutakip.cariradar",
       "infoPlist": {
         "NSLocationWhenInUseUsageDescription": "En yakın carileri harita üzerinde görmek ve saha takibi yapmak için konum izni gereklidir.",
-        "NSLocationAlwaysAndWhenInUseUsageDescription": "Uygulama kapalıyken de 50 metre mesafedeki carilere yaklaştığınızda bildirim alabilmeniz için arka plan konum izni gereklidir.",
+        "NSLocationAlwaysAndWhenInUseUsageDescription": "Uygulama kapalıyken de belirlediğiniz mesafedeki carilere yaklaştığınızda bildirim alabilmeniz için arka plan konum izni gereklidir.",
         "UIBackgroundModes": [
           "location",
           "fetch"
@@ -26,6 +26,7 @@
     },
     "android": {
       "package": "com.edutakip.cariradar",
+      "versionCode": 2,
       "adaptiveIcon": {
         "backgroundColor": "#0f172a",
         "foregroundImage": "./assets/android-icon-foreground.png"
@@ -46,7 +47,14 @@
       [
         "expo-location",
         {
-          "locationAlwaysAndWhenInUsePermission": "CariRadar kapalıyken dahi 50 metre yaklaştığınız firmaları bildirebilmek için arka plan konum iznine ihtiyaç duyar."
+          "locationAlwaysAndWhenInUsePermission": "CariRadar kapalıyken dahi yaklaştığınız firmaları bildirebilmek için arka plan konum iznine ihtiyaç duyar."
+        }
+      ],
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/icon.png",
+          "color": "#10b981"
         }
       ]
     ],
