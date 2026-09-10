@@ -20,8 +20,11 @@ import ProximityAlertModal from './components/ProximityAlertModal';
 import { calculateDistance } from './utils/distance';
 import localCariler from './assets/cariler.json';
 
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 const GEOFENCE_TASK_NAME = 'CARI_RADAR_GEOFENCE_TASK';
-const DEFAULT_PROXIMITY = 50; // 50 metre
+const DEFAULT_PROXIMITY = 150; // 150 metre varsayılan
+const STORAGE_KEY_PROXIMITY = '@cari_radar_proximity_threshold';
 const COOLDOWN_MS = 30 * 60 * 1000; // 30 dakika
 
 // Bildirim Ayarları (Expo Go korumalı)
@@ -70,6 +73,30 @@ export default function App() {
   useEffect(() => {
     allCarilerRef.current = allCariler;
   }, [allCariler]);
+
+  // Hafızadan son seçilen metreyi yükle (Varsayılan 150m)
+  useEffect(() => {
+    AsyncStorage.getItem(STORAGE_KEY_PROXIMITY)
+      .then((saved) => {
+        if (saved) {
+          const val = parseInt(saved, 10);
+          if (!isNaN(val) && val > 0) {
+            setProximityThreshold(val);
+          }
+        }
+      })
+      .catch((e) => console.log('[Storage] Proximity okuma hatası:', e));
+  }, []);
+
+  const handleUpdateProximity = (newVal) => {
+    setProximityThreshold(newVal);
+    AsyncStorage.setItem(STORAGE_KEY_PROXIMITY, String(newVal)).catch((e) =>
+      console.log('[Storage] Proximity yazma hatası:', e)
+    );
+    if (allCariler.length > 0) {
+      setupGeofences(allCariler, newVal);
+    }
+  };
 
   // 1. Canlı SQL Verilerini Vercel Bulutundan Çek
   const loadData = async () => {
@@ -279,7 +306,7 @@ export default function App() {
         isRefreshing={isRefreshing}
         onRefreshData={loadData}
         proximityThreshold={proximityThreshold}
-        setProximityThreshold={setProximityThreshold}
+        setProximityThreshold={handleUpdateProximity}
         isSimulating={isSimulating}
         setIsSimulating={setIsSimulating}
       />

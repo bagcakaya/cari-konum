@@ -1,32 +1,31 @@
-﻿import React from 'react';
+import React, { useState } from 'react';
 import {
   StyleSheet,
   View,
   Text,
   TouchableOpacity,
   ActivityIndicator,
+  Modal,
+  TouchableWithoutFeedback,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+
+const PROXIMITY_OPTIONS = [50, 100, 150, 200, 300, 500];
 
 export default function Header({
   isTracking,
   isRefreshing,
   onRefreshData,
-  proximityThreshold = 50,
+  proximityThreshold = 150,
   setProximityThreshold,
   isSimulating,
   setIsSimulating,
 }) {
-  const cycleThreshold = () => {
-    const next =
-      proximityThreshold === 50
-        ? 100
-        : proximityThreshold === 100
-        ? 150
-        : proximityThreshold === 150
-        ? 200
-        : 50;
-    setProximityThreshold(next);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+
+  const handleSelectThreshold = (val) => {
+    setProximityThreshold(val);
+    setIsDropdownOpen(false);
   };
 
   return (
@@ -59,13 +58,19 @@ export default function Header({
 
       {/* Sağ: Aksiyon Butonları */}
       <View style={styles.actions}>
-        {/* Mesafe Seçici Butonu */}
+        {/* Aşağı Açılır Mesafe Seçici Butonu */}
         <TouchableOpacity
-          style={styles.radiusBtn}
+          style={[styles.radiusBtn, isDropdownOpen && styles.radiusBtnOpen]}
           activeOpacity={0.7}
-          onPress={cycleThreshold}
+          onPress={() => setIsDropdownOpen(!isDropdownOpen)}
         >
           <Text style={styles.radiusBtnText}>{proximityThreshold}m</Text>
+          <Ionicons
+            name={isDropdownOpen ? 'chevron-up' : 'chevron-down'}
+            size={12}
+            color="#60a5fa"
+            style={styles.chevronIcon}
+          />
         </TouchableOpacity>
 
         {/* Simülasyon / Test Modu */}
@@ -95,6 +100,59 @@ export default function Header({
           )}
         </TouchableOpacity>
       </View>
+
+      {/* Aşağı Açılan Dropdown Menü */}
+      <Modal
+        visible={isDropdownOpen}
+        transparent={true}
+        animationType="fade"
+        onRequestClose={() => setIsDropdownOpen(false)}
+      >
+        <TouchableWithoutFeedback onPress={() => setIsDropdownOpen(false)}>
+          <View style={styles.modalOverlay}>
+            <TouchableWithoutFeedback>
+              <View style={styles.dropdownCard}>
+                <View style={styles.dropdownHeader}>
+                  <Text style={styles.dropdownTitle}>Radar Menzili</Text>
+                </View>
+                {PROXIMITY_OPTIONS.map((val) => {
+                  const isSelected = proximityThreshold === val;
+                  return (
+                    <TouchableOpacity
+                      key={val}
+                      style={[
+                        styles.dropdownItem,
+                        isSelected && styles.dropdownItemActive,
+                      ]}
+                      activeOpacity={0.7}
+                      onPress={() => handleSelectThreshold(val)}
+                    >
+                      <View style={styles.dropdownItemLeft}>
+                        <Ionicons
+                          name="radio"
+                          size={12}
+                          color={isSelected ? '#3b82f6' : '#64748b'}
+                        />
+                        <Text
+                          style={[
+                            styles.dropdownItemText,
+                            isSelected && styles.dropdownItemTextActive,
+                          ]}
+                        >
+                          {val}m {val === 150 ? '(Varsayılan)' : ''}
+                        </Text>
+                      </View>
+                      {isSelected && (
+                        <Ionicons name="checkmark-circle" size={15} color="#3b82f6" />
+                      )}
+                    </TouchableOpacity>
+                  );
+                })}
+              </View>
+            </TouchableWithoutFeedback>
+          </View>
+        </TouchableWithoutFeedback>
+      </Modal>
     </View>
   );
 }
@@ -178,11 +236,20 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     paddingVertical: 6,
     borderRadius: 10,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  radiusBtnOpen: {
+    backgroundColor: '#172554',
+    borderColor: '#60a5fa',
   },
   radiusBtnText: {
     color: '#60a5fa',
     fontSize: 12,
     fontWeight: '700',
+  },
+  chevronIcon: {
+    marginLeft: 3,
   },
   iconBtn: {
     width: 36,
@@ -197,5 +264,64 @@ const styles = StyleSheet.create({
   iconBtnActive: {
     borderColor: '#f59e0b',
     backgroundColor: 'rgba(245, 158, 11, 0.15)',
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.35)',
+    justifyContent: 'flex-start',
+    alignItems: 'flex-end',
+    paddingTop: 90,
+    paddingRight: 16,
+  },
+  dropdownCard: {
+    width: 175,
+    backgroundColor: '#1e293b',
+    borderRadius: 14,
+    borderWidth: 1,
+    borderColor: '#334155',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.45,
+    shadowRadius: 10,
+    elevation: 12,
+    overflow: 'hidden',
+    paddingVertical: 4,
+  },
+  dropdownHeader: {
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderBottomWidth: 1,
+    borderBottomColor: '#334155',
+  },
+  dropdownTitle: {
+    fontSize: 10,
+    fontWeight: '700',
+    color: '#94a3b8',
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+  },
+  dropdownItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingVertical: 9,
+    paddingHorizontal: 12,
+  },
+  dropdownItemActive: {
+    backgroundColor: 'rgba(37, 99, 235, 0.15)',
+  },
+  dropdownItemLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  dropdownItemText: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: '#cbd5e1',
+  },
+  dropdownItemTextActive: {
+    color: '#60a5fa',
+    fontWeight: '700',
   },
 });

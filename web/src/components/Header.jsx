@@ -37,7 +37,7 @@ export default function Header({
 
       {/* Sag Aksiyonlar */}
       <div className="flex items-center gap-1.5">
-        {/* Yarıçap Seçici (Varsayılan 100m) */}
+        {/* Yarıçap Seçici (Varsayılan 150m) */}
         <select
           value={proximityThreshold}
           onChange={(e) => setProximityThreshold(Number(e.target.value))}
@@ -46,8 +46,10 @@ export default function Header({
         >
           <option value={50}>50m</option>
           <option value={100}>100m</option>
-          <option value={150}>150m</option>
+          <option value={150}>150m (Varsayılan)</option>
           <option value={200}>200m</option>
+          <option value={300}>300m</option>
+          <option value={500}>500m</option>
         </select>
         {/* PWA Yukle / Ana Ekrana Ekle Butonu */}
         {deferredPrompt && (

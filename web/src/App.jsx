@@ -11,8 +11,9 @@ import {
   sendProximityPushNotification
 } from './services/notifications';
 
-// Varsayılan Yaklaşma Eşiği (Metre) - Kullanıcı isteği ile 50m yapıldı
-const DEFAULT_PROXIMITY_THRESHOLD = 50;
+// Varsayılan Yaklaşma Eşiği (Metre) - Kullanıcı isteği ile 150m yapıldı
+const DEFAULT_PROXIMITY_THRESHOLD = 150;
+const STORAGE_KEY_PROXIMITY = 'CARIRADAR_PROXIMITY_THRESHOLD';
 // Bildirim bekleme süresi (Aynı cari için 30 dakika)
 const COOLDOWN_MS = 30 * 60 * 1000;
 
@@ -24,7 +25,23 @@ export default function App() {
   const [selectedCari, setSelectedCari] = useState(null);
   const [activeProximityAlert, setActiveProximityAlert] = useState(null);
   const [hasNotificationPermission, setHasNotificationPermission] = useState(false);
-  const [proximityThreshold, setProximityThreshold] = useState(DEFAULT_PROXIMITY_THRESHOLD);
+  const [proximityThreshold, setProximityThreshold] = useState(() => {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY_PROXIMITY);
+      if (saved) {
+        const val = Number(saved);
+        if (!isNaN(val) && val > 0) return val;
+      }
+    } catch (e) {}
+    return DEFAULT_PROXIMITY_THRESHOLD;
+  });
+
+  const handleUpdateProximity = (val) => {
+    setProximityThreshold(val);
+    try {
+      localStorage.setItem(STORAGE_KEY_PROXIMITY, String(val));
+    } catch (e) {}
+  };
 
   // Arama & Filtreleme Durumu
   const [searchQuery, setSearchQuery] = useState('');
@@ -302,7 +319,7 @@ export default function App() {
         deferredPrompt={deferredPrompt}
         onInstallPWA={handleInstallPWA}
         proximityThreshold={proximityThreshold}
-        setProximityThreshold={setProximityThreshold}
+        setProximityThreshold={handleUpdateProximity}
       />
 
       {/* Ana Harita Alanı */}
