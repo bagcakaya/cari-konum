@@ -1,22 +1,26 @@
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useRef, useEffect, useState, useMemo, useCallback } from 'react';
 import { StyleSheet, View, ActivityIndicator } from 'react-native';
 import { WebView } from 'react-native-webview';
+import { LEAFLET_CSS, LEAFLET_JS } from './leafletBundle';
 
-const MAP_HTML = `
+// HTML şablonu: Leaflet JS & CSS gömülü (CDN bağımlılığı sıfır), CartoDB Voyager tiles (engelsiz ve hızlı)
+const createMapHtml = (initialCariler = []) => `
 <!DOCTYPE html>
 <html>
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
   <style>
-    * { box-sizing: border-box; }
+    ${LEAFLET_CSS}
+  </style>
+  <style>
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
     html, body {
       margin: 0; padding: 0;
       width: 100%; height: 100%;
       overflow: hidden;
       background: #0f172a;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     }
     #map {
       position: absolute;
@@ -52,25 +56,68 @@ const MAP_HTML = `
       border-radius: 14px !important;
       border: 1px solid #334155 !important;
       padding: 4px !important;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5) !important;
     }
     .leaflet-popup-tip { background: #1e293b !important; }
     .btn-action {
       flex: 1; padding: 7px 10px; border-radius: 8px; border: none; font-size: 11px; font-weight: bold; cursor: pointer; color: white;
     }
+    .btn-action:active { opacity: 0.8; }
   </style>
 </head>
 <body>
   <div id="map"></div>
   <script>
-    var map = L.map('map', { zoomControl: false }).setView([39.9086, 41.2769], 14);
-    
-    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    ${LEAFLET_JS}
+  </script>
+  <script>
+    // JS Hata Yakalama (React Native tarafına iletmek için)
+    window.onerror = function(msg, url, line) {
+      if (window.ReactNativeWebView && window.ReactNativeWebView.postMessage) {
+        window.ReactNativeWebView.postMessage(JSON.stringify({
+          type: 'MAP_ERROR',
+          error: msg + ' (' + line + ')'
+        }));
+      }
+    };
+
+    function postAppMessage(type, data) {
+      try {
+        if (window.ReactNativeWebView && window.ReactNativeWebView.postMessage) {
+          window.ReactNativeWebView.postMessage(JSON.stringify({ type: type, data: data }));
+        }
+      } catch (e) {
+        console.warn('postAppMessage error:', e);
+      }
+    }
+
+    // Harita Hazır El Sıkışması (Asenkron köprü gelene kadar 100ms aralıkla dener)
+    function notifyMapReady() {
+      if (window.ReactNativeWebView && window.ReactNativeWebView.postMessage) {
+        window.ReactNativeWebView.postMessage(JSON.stringify({ type: 'MAP_READY' }));
+        return true;
+      }
+      return false;
+    }
+    if (!notifyMapReady()) {
+      var checkReadyInterval = setInterval(function() {
+        if (notifyMapReady()) clearInterval(checkReadyInterval);
+      }, 100);
+      setTimeout(function() { clearInterval(checkReadyInterval); }, 6000);
+    }
+
+    var defaultCenter = [39.9086, 41.2769];
+    var map = L.map('map', { zoomControl: false }).setView(defaultCenter, 14);
+
+    // CartoDB Voyager Katmanı (Mobil WebView için engelsiz, hızlı ve temiz)
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+      subdomains: 'abcd',
       maxZoom: 19,
-      attribution: '&copy; OpenStreetMap'
+      attribution: '&copy; OpenStreetMap, &copy; CARTO'
     }).addTo(map);
 
-    setTimeout(function() { map.invalidateSize(); }, 300);
-    setTimeout(function() { map.invalidateSize(); }, 1000);
+    setTimeout(function() { map.invalidateSize(); }, 200);
+    setTimeout(function() { map.invalidateSize(); }, 800);
 
     var userMarker = null;
     var userCircle = null;
@@ -78,25 +125,8 @@ const MAP_HTML = `
     var proximityRadius = 50;
 
     map.on('click', function(e) {
-      if (window.ReactNativeWebView) {
-        window.ReactNativeWebView.postMessage(JSON.stringify({
-          type: 'MAP_CLICK',
-          lat: e.latlng.lat,
-          lng: e.latlng.lng
-        }));
-      }
+      postAppMessage('MAP_CLICK', { lat: e.latlng.lat, lng: e.latlng.lng });
     });
-
-    function postAppMessage(type, data) {
-      if (window.ReactNativeWebView) {
-        window.ReactNativeWebView.postMessage(JSON.stringify({ type: type, data: data }));
-      }
-    }
-
-    function setRadius(r) {
-      proximityRadius = r || 50;
-      if (userCircle) userCircle.setRadius(proximityRadius);
-    }
 
     function setCariler(list) {
       markersLayer.clearLayers();
@@ -118,17 +148,18 @@ const MAP_HTML = `
 
         var m = L.marker([c.enlem, c.boylam], { icon: icon });
         
-        var popupContent = '<div style="min-width:180px;font-family:system-ui,-apple-system,sans-serif;">' +
+        var bakiyeStr = Math.abs(c.bakiye || 0).toLocaleString('tr-TR') + ' ₺';
+        var popupContent = '<div style="min-width:180px;">' +
           '<div style="font-size:10px;font-weight:700;color:#94a3b8;">' + (c.kod || '') + '</div>' +
           '<div style="font-size:13px;font-weight:800;color:#ffffff;margin-top:2px;">' + (c.ad || '') + '</div>' +
           '<div style="font-size:11px;color:#cbd5e1;margin-top:4px;">' + (c.adresTemiz || c.ilce || '') + '</div>' +
           '<div style="margin-top:8px;padding-top:6px;border-top:1px solid #334155;display:flex;justify-content:space-between;align-items:center;">' +
             '<span style="font-size:11px;color:#94a3b8;">Bakiye:</span>' +
-            '<strong style="font-size:12px;color:' + color + ';">' + Math.abs(c.bakiye || 0).toLocaleString('tr-TR') + ' ₺</strong>' +
+            '<strong style="font-size:12px;color:' + color + ';">' + bakiyeStr + '</strong>' +
           '</div>' +
           '<div style="display:flex;gap:6px;margin-top:10px;">' +
-            '<button onclick="postAppMessage(\'SELECT_CARI\', ' + c.id + ')" class="btn-action" style="background:#2563eb;">Detay</button>' +
-            '<button onclick="postAppMessage(\'TEST_CARI\', ' + c.id + ')" class="btn-action" style="background:#d97706;">🎯 Test</button>' +
+            '<button onclick="postAppMessage(\\'SELECT_CARI\\', ' + c.id + ')" class="btn-action" style="background:#2563eb;">Detay</button>' +
+            '<button onclick="postAppMessage(\\'TEST_CARI\\', ' + c.id + ')" class="btn-action" style="background:#d97706;">🎯 50m Test</button>' +
           '</div>' +
         '</div>';
 
@@ -163,9 +194,8 @@ const MAP_HTML = `
       }
     }
 
-    if (window.ReactNativeWebView) {
-      window.ReactNativeWebView.postMessage(JSON.stringify({ type: 'MAP_READY' }));
-    }
+    // İlk carileri başlangıçta çiz (varsa)
+    ${initialCariler.length > 0 ? `setCariler(${JSON.stringify(initialCariler)});` : ''}
   </script>
 </body>
 </html>
@@ -183,10 +213,21 @@ export default function MapWebView({
   const webViewRef = useRef(null);
   const [isMapReady, setIsMapReady] = useState(false);
 
-  // Harita hazır olduğunda veya cariler güncellendiğinde carileri aktar
-  useEffect(() => {
-    if (isMapReady && webViewRef.current) {
-      const validCariler = cariler.filter((c) => c.enlem && c.boylam);
+  // Sadece geçerli koordinatlı cariler
+  const validCariler = useMemo(
+    () => cariler.filter((c) => c.enlem && c.boylam),
+    [cariler]
+  );
+
+  // Başlangıç HTML'i - Cariler içine gömülerek anında görünmesi garanti edilir
+  const mapHtml = useMemo(
+    () => createMapHtml(validCariler),
+    [] // İlk açılışta oluşturulur
+  );
+
+  // Carileri WebView'a aktarma fonksiyonu
+  const injectCariler = useCallback(() => {
+    if (webViewRef.current && validCariler.length > 0) {
       const js = `
         if (typeof setCariler === 'function') {
           setCariler(${JSON.stringify(validCariler)});
@@ -195,11 +236,11 @@ export default function MapWebView({
       `;
       webViewRef.current.injectJavaScript(js);
     }
-  }, [isMapReady, cariler]);
+  }, [validCariler]);
 
-  // Konum değiştiğinde aktar
-  useEffect(() => {
-    if (isMapReady && webViewRef.current && userLocation) {
+  // Konumu WebView'a aktarma fonksiyonu
+  const injectLocation = useCallback(() => {
+    if (webViewRef.current && userLocation) {
       const js = `
         if (typeof updateUserLoc === 'function') {
           updateUserLoc(${userLocation.latitude}, ${userLocation.longitude}, ${proximityThreshold || 50});
@@ -208,13 +249,39 @@ export default function MapWebView({
       `;
       webViewRef.current.injectJavaScript(js);
     }
-  }, [isMapReady, userLocation, proximityThreshold]);
+  }, [userLocation, proximityThreshold]);
+
+  // Harita hazır olduğunda veya cariler listesi güncellendiğinde aktar
+  useEffect(() => {
+    if (isMapReady) {
+      injectCariler();
+    }
+  }, [isMapReady, injectCariler]);
+
+  // Konum değiştiğinde aktar
+  useEffect(() => {
+    if (isMapReady) {
+      injectLocation();
+    }
+  }, [isMapReady, injectLocation]);
+
+  // WebView yüklemesi bittiğinde hemen veri enjekte et (Handshake beklenmeden çift koruma)
+  const handleLoadEnd = () => {
+    setTimeout(() => {
+      injectCariler();
+      injectLocation();
+    }, 150);
+  };
 
   const handleMessage = (event) => {
     try {
       const data = JSON.parse(event.nativeEvent.data);
       if (data.type === 'MAP_READY') {
         setIsMapReady(true);
+        injectCariler();
+        injectLocation();
+      } else if (data.type === 'MAP_ERROR') {
+        console.warn('[MapWebView JS Error]:', data.error);
       } else if (data.type === 'SELECT_CARI') {
         const found = cariler.find((c) => String(c.id) === String(data.data));
         if (found && onSelectCari) onSelectCari(found);
@@ -222,12 +289,12 @@ export default function MapWebView({
         const found = cariler.find((c) => String(c.id) === String(data.data));
         if (found && onTestProximity) onTestProximity(found);
       } else if (data.type === 'MAP_CLICK') {
-        if (isSimulating && onSimulateLocation) {
-          onSimulateLocation(data.lat, data.lng);
+        if (isSimulating && onSimulateLocation && data.data) {
+          onSimulateLocation(data.data.lat, data.data.lng);
         }
       }
     } catch (e) {
-      console.warn('Map message error:', e);
+      console.warn('Map message parse error:', e);
     }
   };
 
@@ -236,20 +303,19 @@ export default function MapWebView({
       <WebView
         ref={webViewRef}
         originWhitelist={['*']}
-        source={{ html: MAP_HTML, baseUrl: 'https://cdnjs.cloudflare.com' }}
+        source={{ html: mapHtml, baseUrl: 'https://cari-konum.vercel.app' }}
         style={styles.webview}
         onMessage={handleMessage}
+        onLoadEnd={handleLoadEnd}
         javaScriptEnabled={true}
         domStorageEnabled={true}
-        startInLoadingState={true}
-        scalesPageToFit={true}
+        startInLoadingState={false}
+        scalesPageToFit={false}
         mixedContentMode="always"
-        androidLayerType="hardware"
-        renderLoading={() => (
-          <View style={styles.loadingContainer}>
-            <ActivityIndicator size="large" color="#3b82f6" />
-          </View>
-        )}
+        androidHardwareAccelerationDisabled={false}
+        allowFileAccess={true}
+        allowUniversalAccessFromFileURLs={true}
+        userAgent="Mozilla/5.0 (Linux; Android 14; Mobile) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Mobile Safari/537.36 CariRadar/1.0"
       />
     </View>
   );
@@ -262,16 +328,6 @@ const styles = StyleSheet.create({
   },
   webview: {
     flex: 1,
-    backgroundColor: '#0f172a',
-  },
-  loadingContainer: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    justifyContent: 'center',
-    alignItems: 'center',
     backgroundColor: '#0f172a',
   },
 });

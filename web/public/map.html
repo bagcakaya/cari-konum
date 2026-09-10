@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>CariRadar Harita</title>
+  <link rel="stylesheet" href="./vendor/leaflet/leaflet.css" />
+  <style>
+    * { box-sizing: border-box; }
+    html, body {
+      margin: 0; padding: 0;
+      width: 100%; height: 100%;
+      overflow: hidden;
+      background: #0f172a;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+    #map {
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      width: 100%; height: 100%;
+      background: #0f172a;
+    }
+    .user-pulse {
+      position: relative;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: #2563eb;
+      border: 3px solid #ffffff;
+      box-shadow: 0 0 10px rgba(0,0,0,0.5);
+    }
+    .user-pulse::before {
+      content: '';
+      position: absolute;
+      top: -10px; left: -10px;
+      width: 40px; height: 40px;
+      border-radius: 50%;
+      background: rgba(37, 99, 235, 0.4);
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0% { transform: scale(0.6); opacity: 0.8; }
+      100% { transform: scale(2.0); opacity: 0; }
+    }
+    .leaflet-popup-content-wrapper {
+      background: #1e293b !important;
+      color: #f8fafc !important;
+      border-radius: 14px !important;
+      border: 1px solid #334155 !important;
+      padding: 4px !important;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5) !important;
+    }
+    .leaflet-popup-tip { background: #1e293b !important; }
+    .btn-action {
+      flex: 1; padding: 7px 10px; border-radius: 8px; border: none; font-size: 11px; font-weight: bold; cursor: pointer; color: white;
+    }
+    .btn-action:active { opacity: 0.8; }
+    .map-fab {
+      position: absolute;
+      right: 14px;
+      z-index: 1000;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: #1e293b;
+      border: 1px solid #334155;
+      color: #38bdf8;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+      cursor: pointer;
+      font-size: 18px;
+    }
+    .map-fab:active { transform: scale(0.95); }
+    #btn-recenter { top: 14px; }
+  </style>
+</head>
+<body>
+  <div id="map"></div>
+  <button id="btn-recenter" class="map-fab" title="Konumuma Git">📍</button>
+
+  <script src="./vendor/leaflet/leaflet.js"></script>
+  <script>
+    // 1. PostMessage Helper (Asenkron köprü hazır olana kadar bekler)
+    function sendToApp(payload) {
+      try {
+        if (window.ReactNativeWebView && window.ReactNativeWebView.postMessage) {
+          window.ReactNativeWebView.postMessage(JSON.stringify(payload));
+        }
+      } catch (e) {
+        console.warn('sendToApp error:', e);
+      }
+    }
+
+    // Harita Hazır Sinyalini Gönder (Handshake)
+    function notifyReady() {
+      if (window.ReactNativeWebView && window.ReactNativeWebView.postMessage) {
+        sendToApp({ type: 'MAP_READY' });
+        return true;
+      }
+      return false;
+    }
+    if (!notifyReady()) {
+      var readyTimer = setInterval(function() {
+        if (notifyReady()) clearInterval(readyTimer);
+      }, 150);
+      setTimeout(function() { clearInterval(readyTimer); }, 5000);
+    }
+
+    // 2. Haritayı Başlat (Erzurum Yakutiye Merkezli)
+    var defaultCenter = [39.9086, 41.2769];
+    var map = L.map('map', {
+      center: defaultCenter,
+      zoom: 14,
+      zoomControl: false
+    });
+
+    // CartoDB Voyager Katmanı (Mobil için hızlı, şık ve engelsiz)
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+      subdomains: 'abcd',
+      maxZoom: 19,
+      attribution: '&copy; OpenStreetMap, &copy; CARTO'
+    }).addTo(map);
+
+    setTimeout(function() { map.invalidateSize(); }, 300);
+    setTimeout(function() { map.invalidateSize(); }, 1000);
+
+    var userMarker = null;
+    var userCircle = null;
+    var userLat = null;
+    var userLng = null;
+    var proximityRadius = 50;
+    var markersLayer = L.layerGroup().addTo(map);
+    var hasCarilerLoaded = false;
+
+    // Harita Tıklama (Simülasyon Modu İçin)
+    map.on('click', function(e) {
+      sendToApp({
+        type: 'MAP_CLICK',
+        lat: e.latlng.lat,
+        lng: e.latlng.lng
+      });
+    });
+
+    // Konuma Git Butonu
+    document.getElementById('btn-recenter').onclick = function() {
+      if (userLat && userLng) {
+        map.setView([userLat, userLng], 16, { animate: true });
+      } else {
+        map.setView(defaultCenter, 14, { animate: true });
+      }
+    };
+
+    // 3. Cari Noktalarını Çiz
+    window.setCariler = function(list) {
+      if (!list || !list.length) return;
+      hasCarilerLoaded = true;
+      markersLayer.clearLayers();
+
+      list.forEach(function(c) {
+        if (!c.enlem || !c.boylam) return;
+        var isBorclu = c.bakiye > 0;
+        var isAlacakli = c.bakiye < 0;
+        var color = isBorclu ? '#ef4444' : (isAlacakli ? '#10b981' : '#64748b');
+
+        var icon = L.divIcon({
+          className: 'custom-pin',
+          html: '<div style="width:26px;height:26px;background:' + color + ';border:2px solid white;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 3px 8px rgba(0,0,0,0.5);font-size:12px;">📍</div>',
+          iconSize: [28, 28],
+          iconAnchor: [14, 28],
+          popupAnchor: [0, -28]
+        });
+
+        var m = L.marker([c.enlem, c.boylam], { icon: icon });
+
+        var bakiyeStr = Math.abs(c.bakiye || 0).toLocaleString('tr-TR') + ' ₺';
+        var popupContent = '<div style="min-width:180px;">' +
+          '<div style="font-size:10px;font-weight:700;color:#94a3b8;">' + (c.kod || '') + '</div>' +
+          '<div style="font-size:13px;font-weight:800;color:#ffffff;margin-top:2px;">' + (c.ad || '') + '</div>' +
+          '<div style="font-size:11px;color:#cbd5e1;margin-top:4px;">' + (c.adresTemiz || c.ilce || '') + '</div>' +
+          '<div style="margin-top:8px;padding-top:6px;border-top:1px solid #334155;display:flex;justify-content:space-between;align-items:center;">' +
+            '<span style="font-size:11px;color:#94a3b8;">Bakiye:</span>' +
+            '<strong style="font-size:12px;color:' + color + ';">' + bakiyeStr + '</strong>' +
+          '</div>' +
+          '<div style="display:flex;gap:6px;margin-top:10px;">' +
+            '<button onclick="sendToApp({type:\'SELECT_CARI\', data:' + c.id + '})" class="btn-action" style="background:#2563eb;">Detay</button>' +
+            '<button onclick="sendToApp({type:\'TEST_CARI\', data:' + c.id + '})" class="btn-action" style="background:#d97706;">🎯 50m Test</button>' +
+          '</div>' +
+        '</div>';
+
+        m.bindPopup(popupContent);
+        markersLayer.addLayer(m);
+      });
+      map.invalidateSize();
+    };
+
+    // 4. Kullanıcı Konumu ve 50m Radar Çemberini Güncelle
+    window.updateUserLoc = function(lat, lng, radius) {
+      userLat = lat;
+      userLng = lng;
+      proximityRadius = radius || proximityRadius || 50;
+
+      if (!userMarker) {
+        var userIcon = L.divIcon({
+          className: 'user-pulse',
+          iconSize: [20, 20],
+          iconAnchor: [10, 10]
+        });
+        userMarker = L.marker([lat, lng], { icon: userIcon, zIndexOffset: 1000 }).addTo(map);
+        userCircle = L.circle([lat, lng], {
+          radius: proximityRadius,
+          color: '#2563eb',
+          fillColor: '#3b82f6',
+          fillOpacity: 0.15,
+          weight: 1.5,
+          dashArray: '4, 6'
+        }).addTo(map);
+        map.setView([lat, lng], 15);
+      } else {
+        userMarker.setLatLng([lat, lng]);
+        userCircle.setLatLng([lat, lng]);
+        userCircle.setRadius(proximityRadius);
+      }
+    };
+
+    // 5. İlk Açılışta Köprüden Veri Gelmezse Buluttan Yükle (Otomatik Güvenlik Ağı)
+    setTimeout(function() {
+      if (!hasCarilerLoaded) {
+        fetch('./data/cariler.json')
+          .then(function(res) { return res.json(); })
+          .then(function(data) {
+            if (data && data.cariler && !hasCarilerLoaded) {
+              window.setCariler(data.cariler);
+            }
+          })
+          .catch(function(e) { console.warn('Yerel veri çekme hatası:', e); });
+      }
+    }, 600);
+  </script>
+</body>
+</html>
