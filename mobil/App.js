@@ -65,6 +65,11 @@ export default function App() {
 
   const notificationCooldowns = useRef({});
   const locationSubRef = useRef(null);
+  const allCarilerRef = useRef(allCariler);
+
+  useEffect(() => {
+    allCarilerRef.current = allCariler;
+  }, [allCariler]);
 
   // 1. Canlı SQL Verilerini Vercel Bulutundan Çek
   const loadData = async () => {
@@ -177,7 +182,7 @@ export default function App() {
         responseSub = SafeNotifications.addNotificationResponseReceivedListener((response) => {
           const cariId = response?.notification?.request?.content?.data?.cariId;
           if (cariId) {
-            const found = allCariler.find((c) => String(c.id) === String(cariId));
+            const found = allCarilerRef.current.find((c) => String(c.id) === String(cariId));
             if (found) setSelectedCari(found);
           }
         });
