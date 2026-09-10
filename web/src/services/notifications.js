@@ -12,6 +12,15 @@ export async function initOneSignal(appId) {
     return;
   }
 
+  // OneSignal SDK'sini dinamik olarak yukle
+  if (!document.getElementById('onesignal-sdk')) {
+    const s = document.createElement('script');
+    s.id = 'onesignal-sdk';
+    s.src = 'https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js';
+    s.defer = true;
+    document.head.appendChild(s);
+  }
+
   window.OneSignalDeferred = window.OneSignalDeferred || [];
   window.OneSignalDeferred.push(async function(OneSignal) {
     try {
