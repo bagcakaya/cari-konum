@@ -1,4 +1,4 @@
-﻿import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import {
   StyleSheet,
   View,
@@ -6,8 +6,9 @@ import {
   TextInput,
   TouchableOpacity,
   FlatList,
-  Animated,
   Dimensions,
+  Keyboard,
+  Platform,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { formatDistance, formatCurrency } from '../utils/distance';
@@ -24,6 +25,23 @@ export default function CariListDrawer({
 }) {
   const [search, setSearch] = useState('');
   const [filter, setFilter] = useState('hepsi'); // 'hepsi' | 'yakin' | 'borclu' | 'alacakli'
+  const [isKeyboardVisible, setIsKeyboardVisible] = useState(false);
+
+  // Klavye açılıp kapandığında çekmecenin yukarı taşmasını önleme
+  useEffect(() => {
+    const showSub = Keyboard.addListener(
+      Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow',
+      () => setIsKeyboardVisible(true)
+    );
+    const hideSub = Keyboard.addListener(
+      Platform.OS === 'ios' ? 'keyboardWillHide' : 'keyboardDidHide',
+      () => setIsKeyboardVisible(false)
+    );
+    return () => {
+      showSub.remove();
+      hideSub.remove();
+    };
+  }, []);
 
   // Filtreleme
   const filteredList = useMemo(() => {
@@ -49,6 +67,13 @@ export default function CariListDrawer({
     return list;
   }, [cariler, search, filter]);
 
+  const handleToggleDrawer = () => {
+    if (isOpen) {
+      Keyboard.dismiss();
+    }
+    setIsOpen(!isOpen);
+  };
+
   const renderItem = ({ item }) => {
     const isBorclu = item.bakiye > 0;
     const isAlacakli = item.bakiye < 0;
@@ -58,7 +83,10 @@ export default function CariListDrawer({
       <TouchableOpacity
         style={styles.card}
         activeOpacity={0.7}
-        onPress={() => onSelectCari(item)}
+        onPress={() => {
+          Keyboard.dismiss();
+          onSelectCari(item);
+        }}
       >
         <View style={styles.cardHeader}>
           <View style={styles.codeBadge}>
@@ -115,6 +143,7 @@ export default function CariListDrawer({
             <TouchableOpacity
               style={styles.testBtn}
               onPress={() => {
+                Keyboard.dismiss();
                 setIsOpen(false);
                 onTestProximity(item);
               }}
@@ -128,13 +157,24 @@ export default function CariListDrawer({
     );
   };
 
+  // Dinamik çekmece stili: Klavye açıkken ekranın üstünde sabit kalır
+  const drawerStyle = useMemo(() => {
+    if (!isOpen) {
+      return [styles.drawer, styles.drawerClosed];
+    }
+    if (isKeyboardVisible) {
+      return [styles.drawer, styles.drawerOpenKeyboard];
+    }
+    return [styles.drawer, styles.drawerOpen];
+  }, [isOpen, isKeyboardVisible]);
+
   return (
-    <View style={[styles.drawer, isOpen ? styles.drawerOpen : styles.drawerClosed]}>
+    <View style={drawerStyle}>
       {/* Çekmece Tutamağı */}
       <TouchableOpacity
         style={styles.handleArea}
         activeOpacity={0.8}
-        onPress={() => setIsOpen(!isOpen)}
+        onPress={handleToggleDrawer}
       >
         <View style={styles.handleBar} />
         <View style={styles.headerRow}>
@@ -157,7 +197,7 @@ export default function CariListDrawer({
         </View>
       </TouchableOpacity>
 
-      {/* Arama ve Filtreler */}
+      {/* Arama ve Filtreler (Her zaman görünür kalır) */}
       <View style={styles.searchFilterContainer}>
         <View style={styles.searchBox}>
           <Ionicons name="search" size={16} color="#94a3b8" style={styles.searchIcon} />
@@ -167,7 +207,16 @@ export default function CariListDrawer({
             placeholderTextColor="#64748b"
             value={search}
             onChangeText={setSearch}
+            returnKeyType="search"
           />
+          {search.length > 0 && (
+            <TouchableOpacity
+              onPress={() => setSearch('')}
+              hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+            >
+              <Ionicons name="close-circle" size={16} color="#94a3b8" />
+            </TouchableOpacity>
+          )}
         </View>
 
         <View style={styles.filterRow}>
@@ -209,14 +258,16 @@ export default function CariListDrawer({
         </View>
       </View>
 
-      {/* Liste */}
+      {/* Liste (Klavye açıldığında kalan boşluğa sığacak şekilde kayar) */}
       {isOpen && (
         <FlatList
           data={filteredList}
           keyExtractor={(item) => String(item.id)}
           renderItem={renderItem}
+          style={styles.list}
           contentContainerStyle={styles.listContent}
           keyboardShouldPersistTaps="handled"
+          keyboardDismissMode="on-drag"
         />
       )}
     </View>
@@ -228,7 +279,6 @@ const styles = StyleSheet.create({
     position: 'absolute',
     left: 0,
     right: 0,
-    bottom: 0,
     backgroundColor: '#0f172a',
     borderTopLeftRadius: 24,
     borderTopRightRadius: 24,
@@ -237,10 +287,16 @@ const styles = StyleSheet.create({
     zIndex: 100,
   },
   drawerClosed: {
+    bottom: 0,
     height: 105,
   },
   drawerOpen: {
-    height: SCREEN_HEIGHT * 0.72,
+    bottom: 0,
+    top: Math.round(SCREEN_HEIGHT * 0.28),
+  },
+  drawerOpenKeyboard: {
+    bottom: 0,
+    top: Platform.OS === 'android' ? 50 : 65,
   },
   handleArea: {
     alignItems: 'center',
@@ -346,6 +402,9 @@ const styles = StyleSheet.create({
   },
   filterTextWhite: {
     color: '#ffffff',
+  },
+  list: {
+    flex: 1,
   },
   listContent: {
     paddingHorizontal: 14,
