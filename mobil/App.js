@@ -1,8 +1,16 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
-import { StyleSheet, View, StatusBar, Vibration } from 'react-native';
+import { StyleSheet, View, StatusBar, Vibration, LogBox } from 'react-native';
+import Constants from 'expo-constants';
 import * as Location from 'expo-location';
 import * as TaskManager from 'expo-task-manager';
 import { SafeNotifications } from './utils/notifications';
+
+// Expo Go'da arka plan konumu uyarısını ekranda gösterme (APK derlemesinde arka plan tam çalışır)
+LogBox.ignoreLogs([
+  'Background location is limited in Expo Go',
+  'Location.hasStartedGeofencingAsync',
+  'Location.startGeofencingAsync',
+]);
 
 import Header from './components/Header';
 import MapWebView from './components/MapWebView';
@@ -75,9 +83,16 @@ export default function App() {
     }
   };
 
-  // 2. Donanımsal Geofencing Kaydı
+  // 2. Donanımsal Geofencing Kaydı (Yalnızca Bağımsız APK'da aktiftir; Expo Go'da ön plan radar devrededir)
   const setupGeofences = async (carilerList, radius) => {
     try {
+      // Expo Go ortamında mıyız kontrol et (Google Play güvenlik kuralı nedeniyle Expo Go'da arka plan konumu engellidir)
+      const isExpoGo = Constants?.appOwnership === 'expo' || Constants?.executionEnvironment === 'storeClient';
+      if (isExpoGo) {
+        console.log('[Geofence] Expo Go ortamı: Ön plan 50m radar aktif (Arka plan geofence APK derlemesinde aktifleşir).');
+        return;
+      }
+
       const hasStarted = await Location.hasStartedGeofencingAsync(GEOFENCE_TASK_NAME);
       if (hasStarted) {
         await Location.stopGeofencingAsync(GEOFENCE_TASK_NAME);
@@ -109,8 +124,8 @@ export default function App() {
     async function initPermissions() {
       // Bildirim İzni
       try {
-        if (Notifications && Notifications.requestPermissionsAsync) {
-          await Notifications.requestPermissionsAsync();
+        if (SafeNotifications && SafeNotifications.requestPermissionsAsync) {
+          await SafeNotifications.requestPermissionsAsync();
         }
       } catch (e) {
         console.warn('Bildirim izni atlandı:', e.message);
@@ -123,11 +138,14 @@ export default function App() {
         return;
       }
 
-      // Arka Plan Konum İzni (Geofencing için)
-      try {
-        await Location.requestBackgroundPermissionsAsync();
-      } catch (e) {
-        console.warn('Arka plan konum izni atlandı:', e.message);
+      // Arka Plan Konum İzni (Yalnızca APK'da istenir)
+      const isExpoGo = Constants?.appOwnership === 'expo' || Constants?.executionEnvironment === 'storeClient';
+      if (!isExpoGo) {
+        try {
+          await Location.requestBackgroundPermissionsAsync();
+        } catch (e) {
+          console.warn('Arka plan konum izni atlandı:', e.message);
+        }
       }
 
       // GPS Takibini Başlat
