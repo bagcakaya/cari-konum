@@ -42,11 +42,20 @@ export default function Map({
       zoomControl: false,
     });
 
-    // Standart Ucretsiz OpenStreetMap Katmani (API Key gerektirmez)
-    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-      maxZoom: 19,
+    // Google Maps Katmanları
+    const googleRoadmap = L.tileLayer('https://mt{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}', {
+      subdomains: ['0', '1', '2', '3'],
+      maxZoom: 21,
+      attribution: '&copy; Google Maps',
     }).addTo(map);
+
+    const googleHybrid = L.tileLayer('https://mt{s}.google.com/vt/lyrs=y&x={x}&y={y}&z={z}', {
+      subdomains: ['0', '1', '2', '3'],
+      maxZoom: 21,
+      attribution: '&copy; Google Maps',
+    });
+
+    L.control.layers({ 'Google Harita': googleRoadmap, 'Google Uydu': googleHybrid }, null, { position: 'topright' }).addTo(map);
 
     // Zoom kontrollerini sag altta konumlandir
     L.control.zoom({ position: 'bottomright' }).addTo(map);

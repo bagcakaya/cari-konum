@@ -1,4 +1,6 @@
-import { Vibration } from 'react-native';
+import { Vibration, Platform } from 'react-native';
+
+const CHANNEL_ID = 'cari-radar-alerts';
 
 let Notifications = null;
 try {
@@ -18,11 +20,37 @@ try {
   console.log('[Notifications] Fallback modu devrede.');
 }
 
+const setupNotificationChannelAsync = async () => {
+  if (Platform.OS === 'android' && Notifications?.setNotificationChannelAsync) {
+    try {
+      await Notifications.setNotificationChannelAsync(CHANNEL_ID, {
+        name: 'Cari Radar Yakınlık Bildirimleri',
+        description: '150m mesafedeki carilere yaklaşıldığında sesli ve kilit ekranı uyarıları',
+        importance: Notifications.AndroidImportance?.MAX || 5,
+        vibrationPattern: [0, 500, 250, 500],
+        lightColor: '#10b981',
+        enableLights: true,
+        enableVibrate: true,
+        showBadge: true,
+        sound: 'default',
+      });
+      console.log('[Notifications] Android bildirim kanalı hazırlandı: MAX öncelik.');
+    } catch (e) {
+      console.warn('[Notification Channel Error]', e.message);
+    }
+  }
+};
+
+// Başlangıçta kanalı hemen kaydet
+setupNotificationChannelAsync().catch(() => {});
+
 export const SafeNotifications = {
   requestPermissionsAsync: async () => {
     if (Notifications?.requestPermissionsAsync) {
       try {
-        return await Notifications.requestPermissionsAsync();
+        const perm = await Notifications.requestPermissionsAsync();
+        await setupNotificationChannelAsync();
+        return perm;
       } catch (e) {
         return { status: 'granted' };
       }
@@ -41,6 +69,7 @@ export const SafeNotifications = {
     // 2. Sistem Kilit Ekranı / Durum Çubuğu Bildirimi (APK'da %100 çalışır)
     if (Notifications?.scheduleNotificationAsync) {
       try {
+        await setupNotificationChannelAsync();
         const bakiyeStr = cari?.bakiye
           ? ` (Bakiye: ${Math.abs(cari.bakiye).toLocaleString('tr-TR')} ₺ ${cari.bakiye > 0 ? 'Borç' : 'Alacak'})`
           : '';
@@ -50,9 +79,10 @@ export const SafeNotifications = {
             title: `🚨 ${Math.round(distance || 150)}m Yakınında Cari Bulundu!`,
             body: `${cari?.ad || 'Firma'}${bakiyeStr}\n${cari?.adresTemiz || cari?.ilce || ''}`,
             data: { cariId: cari?.id },
-            sound: true,
+            sound: 'default',
             priority: Notifications.AndroidNotificationPriority?.MAX || 'max',
             vibrate: [0, 500, 250, 500],
+            channelId: CHANNEL_ID,
           },
           trigger: null, // Anında göster
         });

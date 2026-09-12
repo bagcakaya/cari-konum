@@ -63,6 +63,18 @@ const createMapHtml = (initialCariler = []) => `
       flex: 1; padding: 7px 10px; border-radius: 8px; border: none; font-size: 11px; font-weight: bold; cursor: pointer; color: white;
     }
     .btn-action:active { opacity: 0.8; }
+    .leaflet-control-layers {
+      background: #1e293b !important;
+      color: #f8fafc !important;
+      border: 1px solid #334155 !important;
+      border-radius: 10px !important;
+      font-size: 11px !important;
+      font-weight: 600 !important;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.5) !important;
+    }
+    .leaflet-control-layers-expanded {
+      padding: 6px 10px !important;
+    }
   </style>
 </head>
 <body>
@@ -109,12 +121,25 @@ const createMapHtml = (initialCariler = []) => `
     var defaultCenter = [39.9086, 41.2769];
     var map = L.map('map', { zoomControl: false }).setView(defaultCenter, 14);
 
-    // Temiz ve Ücretsiz OpenStreetMap Katmanı (API Key veya Filigran Gerektirmez)
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      subdomains: ['a', 'b', 'c'],
-      maxZoom: 19,
-      attribution: '&copy; OpenStreetMap'
+    // 1. Google Maps Standart Yol Haritası (Binalar, Kapı Numaraları, Cadde/Sokak İsimleri)
+    var googleRoadmap = L.tileLayer('https://mt{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}', {
+      subdomains: ['0', '1', '2', '3'],
+      maxZoom: 21,
+      attribution: '&copy; Google Maps'
     }).addTo(map);
+
+    // 2. Google Maps Hibrit / Uydu Katmanı (Uydu fotoğrafı + Sokak isimleri)
+    var googleHybrid = L.tileLayer('https://mt{s}.google.com/vt/lyrs=y&x={x}&y={y}&z={z}', {
+      subdomains: ['0', '1', '2', '3'],
+      maxZoom: 21,
+      attribution: '&copy; Google Maps'
+    });
+
+    var baseMaps = {
+      "Google Harita": googleRoadmap,
+      "Google Uydu": googleHybrid
+    };
+    L.control.layers(baseMaps, null, { position: 'topright' }).addTo(map);
 
     setTimeout(function() { map.invalidateSize(); }, 200);
     setTimeout(function() { map.invalidateSize(); }, 800);

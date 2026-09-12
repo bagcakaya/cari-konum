@@ -23,9 +23,12 @@ import localCariler from './assets/cariler.json';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const GEOFENCE_TASK_NAME = 'CARI_RADAR_GEOFENCE_TASK';
+const BACKGROUND_LOCATION_TASK = 'CARI_RADAR_LOCATION_TASK';
 const DEFAULT_PROXIMITY = 150; // 150 metre varsayılan
 const STORAGE_KEY_PROXIMITY = '@cari_radar_proximity_threshold';
-const COOLDOWN_MS = 30 * 60 * 1000; // 30 dakika
+const COOLDOWN_MS = 15 * 60 * 1000; // 15 dakika
+
+const backgroundCooldowns = {};
 
 // Bildirim Ayarları (Expo Go korumalı)
 try {
@@ -34,7 +37,45 @@ try {
   console.warn('[Notification] Handler başlatılamadı:', e);
 }
 
-// Arka Plan Geofence Görevi (Uygulama arka plandayken 50m alarmı)
+// 1. Arka Plan Kesintisiz Radar Görevi (Foreground Service - 371 carinin TAMAMI taranır)
+try {
+  TaskManager.defineTask(BACKGROUND_LOCATION_TASK, async ({ data, error }) => {
+    if (error || !data || !data.locations || !data.locations.length) return;
+    const loc = data.locations[0];
+    const { latitude, longitude } = loc.coords;
+
+    const list = localCariler?.cariler || [];
+    const now = Date.now();
+
+    let threshold = DEFAULT_PROXIMITY;
+    try {
+      const saved = await AsyncStorage.getItem(STORAGE_KEY_PROXIMITY);
+      if (saved) {
+        const parsed = parseInt(saved, 10);
+        if (!isNaN(parsed) && parsed > 0) threshold = parsed;
+      }
+    } catch (_) {}
+
+    for (const cari of list) {
+      if (!cari.enlem || !cari.boylam) continue;
+      const dist = calculateDistance(latitude, longitude, cari.enlem, cari.boylam);
+
+      if (dist <= threshold) {
+        const last = backgroundCooldowns[cari.id];
+        if (!last || now - last > COOLDOWN_MS) {
+          backgroundCooldowns[cari.id] = now;
+          console.log(`[Arka Plan Radar] ${cari.ad} carisine yaklaşıldı (${Math.round(dist)}m)`);
+          await SafeNotifications.triggerProximityAlert(cari, dist);
+          break;
+        }
+      }
+    }
+  });
+} catch (e) {
+  console.warn('[LocationTask] Tanımlama hatası:', e);
+}
+
+// 2. Donanımsal Geofence Görevi (Yedek tetikleyici)
 try {
   TaskManager.defineTask(GEOFENCE_TASK_NAME, ({ data: { eventType, region }, error }) => {
     if (error) {
@@ -94,7 +135,7 @@ export default function App() {
       console.log('[Storage] Proximity yazma hatası:', e)
     );
     if (allCariler.length > 0) {
-      setupGeofences(allCariler, newVal);
+      startBackgroundTracking(allCariler, newVal);
     }
   };
 
@@ -107,7 +148,7 @@ export default function App() {
       const data = await res.json();
       const list = data.cariler || [];
       setAllCariler(list);
-      setupGeofences(list, proximityThreshold);
+      startBackgroundTracking(list, proximityThreshold);
     } catch (err) {
       console.warn('Veri yükleme hatası:', err.message);
     } finally {
@@ -115,37 +156,53 @@ export default function App() {
     }
   };
 
-  // 2. Donanımsal Geofencing Kaydı (Yalnızca Bağımsız APK'da aktiftir; Expo Go'da ön plan radar devrededir)
-  const setupGeofences = async (carilerList, radius) => {
+  // 2. Kesintisiz Arka Plan Radarı (Foreground Service + Geofencing)
+  const startBackgroundTracking = async (carilerList, radius) => {
     try {
-      // Expo Go ortamında mıyız kontrol et (Google Play güvenlik kuralı nedeniyle Expo Go'da arka plan konumu engellidir)
       const isExpoGo = Constants?.appOwnership === 'expo' || Constants?.executionEnvironment === 'storeClient';
       if (isExpoGo) {
-        console.log('[Geofence] Expo Go ortamı: Ön plan 50m radar aktif (Arka plan geofence APK derlemesinde aktifleşir).');
+        console.log('[Radar] Expo Go ortamı: Ön plan radar devrede.');
         return;
       }
 
-      const hasStarted = await Location.hasStartedGeofencingAsync(GEOFENCE_TASK_NAME);
-      if (hasStarted) {
+      // A. Kesintisiz Ön Plan Servisi (Samsung'un asla kill edemeyeceği servis)
+      const hasStartedLocation = await Location.hasStartedLocationUpdatesAsync(BACKGROUND_LOCATION_TASK);
+      if (!hasStartedLocation) {
+        await Location.startLocationUpdatesAsync(BACKGROUND_LOCATION_TASK, {
+          accuracy: Location.Accuracy.High,
+          distanceInterval: 10, // Her 10 metrede bir tüm carileri tara
+          deferredUpdatesInterval: 5000,
+          showsBackgroundLocationIndicator: true,
+          foregroundService: {
+            notificationTitle: 'CariRadar Devrede',
+            notificationBody: `Saha radarı ${radius || DEFAULT_PROXIMITY}m mesafeyi tarıyor...`,
+            notificationColor: '#10b981',
+          },
+        });
+        console.log('[Radar] Foreground Service kesintisiz radarı başlatıldı.');
+      }
+
+      // B. Donanımsal Geofencing (100 adetlik donanım desteği)
+      const hasStartedGeofence = await Location.hasStartedGeofencingAsync(GEOFENCE_TASK_NAME);
+      if (hasStartedGeofence) {
         await Location.stopGeofencingAsync(GEOFENCE_TASK_NAME);
       }
 
       const validList = carilerList.filter((c) => c.enlem && c.boylam).slice(0, 100);
-      if (validList.length === 0) return;
-
-      const regions = validList.map((c) => ({
-        identifier: String(c.id),
-        latitude: c.enlem,
-        longitude: c.boylam,
-        radius: radius || DEFAULT_PROXIMITY,
-        notifyOnEnter: true,
-        notifyOnExit: false,
-      }));
-
-      await Location.startGeofencingAsync(GEOFENCE_TASK_NAME, regions);
-      console.log(`[Geofence] ${regions.length} adet cari 50m radara kaydedildi.`);
+      if (validList.length > 0) {
+        const regions = validList.map((c) => ({
+          identifier: String(c.id),
+          latitude: c.enlem,
+          longitude: c.boylam,
+          radius: radius || DEFAULT_PROXIMITY,
+          notifyOnEnter: true,
+          notifyOnExit: false,
+        }));
+        await Location.startGeofencingAsync(GEOFENCE_TASK_NAME, regions);
+        console.log(`[Geofence] ${regions.length} adet cari donanım radarına kaydedildi.`);
+      }
     } catch (e) {
-      console.warn('Geofence başlatılamadı:', e.message);
+      console.warn('Arka plan takibi başlatılamadı:', e.message);
     }
   };
 
@@ -174,7 +231,10 @@ export default function App() {
       const isExpoGo = Constants?.appOwnership === 'expo' || Constants?.executionEnvironment === 'storeClient';
       if (!isExpoGo) {
         try {
-          await Location.requestBackgroundPermissionsAsync();
+          const bgPerm = await Location.requestBackgroundPermissionsAsync();
+          if (bgPerm.status === 'granted') {
+            await startBackgroundTracking(allCarilerRef.current, proximityThreshold);
+          }
         } catch (e) {
           console.warn('Arka plan konum izni atlandı:', e.message);
         }
