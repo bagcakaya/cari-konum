@@ -18,7 +18,7 @@
       "bakiye": -200000,
       "bakiyeDurumu": "alacakli",
       "konumKaynagi": "EXISTING_COORDINATE",
-      "konumDetay": "Mevcut Hassas Koordinat"
+      "konumDetay": "ANKARA YENİMAHALLE Doğrulanmış Konum"
     },
     {
       "id": 1980057,
@@ -338,7 +338,7 @@
       "bakiye": 9000,
       "bakiyeDurumu": "borclu",
       "konumKaynagi": "EXISTING_COORDINATE",
-      "konumDetay": "Mevcut Hassas Koordinat"
+      "konumDetay": "BAYBURT BAYBURT MERKEZ Doğrulanmış Konum"
     },
     {
       "id": 1106364,
@@ -538,7 +538,7 @@
       "bakiye": 0,
       "bakiyeDurumu": "kapali",
       "konumKaynagi": "EXISTING_COORDINATE",
-      "konumDetay": "Mevcut Hassas Koordinat"
+      "konumDetay": "ARTVİN ARTVİN MERKEZ Doğrulanmış Konum"
     },
     {
       "id": 1010080,
@@ -618,7 +618,7 @@
       "bakiye": 0,
       "bakiyeDurumu": "kapali",
       "konumKaynagi": "EXISTING_COORDINATE",
-      "konumDetay": "Mevcut Hassas Koordinat"
+      "konumDetay": "ELAZIĞ ELAZIĞ MERKEZ Doğrulanmış Konum"
     },
     {
       "id": 441230,
@@ -758,7 +758,7 @@
       "bakiye": 8000,
       "bakiyeDurumu": "borclu",
       "konumKaynagi": "EXISTING_COORDINATE",
-      "konumDetay": "Mevcut Hassas Koordinat"
+      "konumDetay": "BAYBURT BAYBURT MERKEZ Doğrulanmış Konum"
     },
     {
       "id": 1978862,
@@ -918,7 +918,7 @@
       "bakiye": 0,
       "bakiyeDurumu": "kapali",
       "konumKaynagi": "EXISTING_COORDINATE",
-      "konumDetay": "Mevcut Hassas Koordinat"
+      "konumDetay": "BAYBURT BAYBURT MERKEZ Doğrulanmış Konum"
     },
     {
       "id": 1427440,
@@ -978,7 +978,7 @@
       "bakiye": 0,
       "bakiyeDurumu": "kapali",
       "konumKaynagi": "EXISTING_COORDINATE",
-      "konumDetay": "Mevcut Hassas Koordinat"
+      "konumDetay": "İSTANBUL TUZLA Doğrulanmış Konum"
     },
     {
       "id": 1981659,
@@ -1038,7 +1038,7 @@
       "bakiye": -38871.2,
       "bakiyeDurumu": "alacakli",
       "konumKaynagi": "EXISTING_COORDINATE",
-      "konumDetay": "Mevcut Hassas Koordinat"
+      "konumDetay": "ANTALYA ANTALYA MERKEZ Doğrulanmış Konum"
     },
     {
       "id": 1106176,
@@ -1218,7 +1218,7 @@
       "bakiye": 0,
       "bakiyeDurumu": "kapali",
       "konumKaynagi": "EXISTING_COORDINATE",
-      "konumDetay": "Mevcut Hassas Koordinat"
+      "konumDetay": "AĞRI AĞRI MERKEZ Doğrulanmış Konum"
     },
     {
       "id": 439915,
@@ -1338,7 +1338,7 @@
       "bakiye": 0,
       "bakiyeDurumu": "kapali",
       "konumKaynagi": "EXISTING_COORDINATE",
-      "konumDetay": "Mevcut Hassas Koordinat"
+      "konumDetay": "ELAZIĞ KARAKOÇAN Doğrulanmış Konum"
     },
     {
       "id": 440376,
@@ -1398,7 +1398,7 @@
       "bakiye": 0,
       "bakiyeDurumu": "kapali",
       "konumKaynagi": "EXISTING_COORDINATE",
-      "konumDetay": "Mevcut Hassas Koordinat"
+      "konumDetay": "MUŞ MALAZGİRT Doğrulanmış Konum"
     },
     {
       "id": 1981571,
@@ -1458,7 +1458,7 @@
       "bakiye": 0,
       "bakiyeDurumu": "kapali",
       "konumKaynagi": "EXISTING_COORDINATE",
-      "konumDetay": "Mevcut Hassas Koordinat"
+      "konumDetay": "ŞANLIURFA HALİLİYE Doğrulanmış Konum"
     },
     {
       "id": 1964468,
@@ -1478,7 +1478,7 @@
       "bakiye": 0,
       "bakiyeDurumu": "kapali",
       "konumKaynagi": "EXISTING_COORDINATE",
-      "konumDetay": "Mevcut Hassas Koordinat"
+      "konumDetay": "İSTANBUL İSTANBUL MERKEZ Doğrulanmış Konum"
     },
     {
       "id": 919270,
@@ -1538,7 +1538,7 @@
       "bakiye": 0,
       "bakiyeDurumu": "kapali",
       "konumKaynagi": "EXISTING_COORDINATE",
-      "konumDetay": "Mevcut Hassas Koordinat"
+      "konumDetay": "İSTANBUL EYÜP Doğrulanmış Konum"
     },
     {
       "id": 1544717,
@@ -1558,7 +1558,7 @@
       "bakiye": 0,
       "bakiyeDurumu": "kapali",
       "konumKaynagi": "EXISTING_COORDINATE",
-      "konumDetay": "Mevcut Hassas Koordinat"
+      "konumDetay": "İSTANBUL ŞİŞLİ Doğrulanmış Konum"
     },
     {
       "id": 458019,
@@ -1698,7 +1698,7 @@
       "bakiye": 0,
       "bakiyeDurumu": "kapali",
       "konumKaynagi": "EXISTING_COORDINATE",
-      "konumDetay": "Mevcut Hassas Koordinat"
+      "konumDetay": "KARS KARS MERKEZ Doğrulanmış Konum"
     },
     {
       "id": 454038,
@@ -1738,7 +1738,7 @@
       "bakiye": 0,
       "bakiyeDurumu": "kapali",
       "konumKaynagi": "EXISTING_COORDINATE",
-      "konumDetay": "Mevcut Hassas Koordinat"
+      "konumDetay": "ARTVİN ARTVİN MERKEZ Doğrulanmış Konum"
     },
     {
       "id": 1961804,
@@ -1758,7 +1758,7 @@
       "bakiye": 0,
       "bakiyeDurumu": "kapali",
       "konumKaynagi": "EXISTING_COORDINATE",
-      "konumDetay": "Mevcut Hassas Koordinat"
+      "konumDetay": "KAYSERİ MELİKGAZİ Doğrulanmış Konum"
     },
     {
       "id": 1966614,
@@ -1798,7 +1798,7 @@
       "bakiye": 0,
       "bakiyeDurumu": "kapali",
       "konumKaynagi": "EXISTING_COORDINATE",
-      "konumDetay": "Mevcut Hassas Koordinat"
+      "konumDetay": "İSTANBUL KADIKÖY Doğrulanmış Konum"
     },
     {
       "id": 1195461,
@@ -2430,15 +2430,15 @@
       "ilce": "İLKADIM",
       "telefon": "",
       "yetkili": "",
-      "enlem": 39.9147,
-      "boylam": 41.273,
+      "enlem": 41.2674,
+      "boylam": 36.329,
       "konumTipi": "tam_adres",
       "borc": 255000,
       "alacak": 255000,
       "bakiye": 0,
       "bakiyeDurumu": "kapali",
-      "konumKaynagi": "MAHALLE_PRECISE",
-      "konumDetay": "KAZIM KARABEKİR Mahallesi"
+      "konumKaynagi": "EXTERNAL_CITY_PRECISE",
+      "konumDetay": "Kazım Karabekir Mah. (İlkadım / Samsun)"
     },
     {
       "id": 1976921,
@@ -2598,7 +2598,7 @@
       "bakiye": 0,
       "bakiyeDurumu": "kapali",
       "konumKaynagi": "EXISTING_COORDINATE",
-      "konumDetay": "Mevcut Hassas Koordinat"
+      "konumDetay": "GİRESUN TİREBOLU Doğrulanmış Konum"
     },
     {
       "id": 439525,
@@ -2678,7 +2678,7 @@
       "bakiye": 0,
       "bakiyeDurumu": "kapali",
       "konumKaynagi": "EXISTING_COORDINATE",
-      "konumDetay": "Mevcut Hassas Koordinat"
+      "konumDetay": "BAYBURT BAYBURT MERKEZ Doğrulanmış Konum"
     },
     {
       "id": 470763,
@@ -2858,7 +2858,7 @@
       "bakiye": 2000,
       "bakiyeDurumu": "borclu",
       "konumKaynagi": "EXISTING_COORDINATE",
-      "konumDetay": "Mevcut Hassas Koordinat"
+      "konumDetay": "TRABZON YOMRA Doğrulanmış Konum"
     },
     {
       "id": 439544,
@@ -3038,7 +3038,7 @@
       "bakiye": 0,
       "bakiyeDurumu": "kapali",
       "konumKaynagi": "EXISTING_COORDINATE",
-      "konumDetay": "Mevcut Hassas Koordinat"
+      "konumDetay": "RİZE PAZAR Doğrulanmış Konum"
     },
     {
       "id": 1195877,
@@ -3090,15 +3090,15 @@
       "ilce": "ÜSKÜDAR",
       "telefon": "",
       "yetkili": "",
-      "enlem": 39.906511,
-      "boylam": 41.273772,
+      "enlem": 41.0107,
+      "boylam": 29.0746,
       "konumTipi": "tam_adres",
       "borc": 24470,
       "alacak": 114600,
       "bakiye": -90130,
       "bakiyeDurumu": "alacakli",
-      "konumKaynagi": "STREET_CENTER",
-      "konumDetay": "Cumhuriyet Cad. No:Ortası"
+      "konumKaynagi": "EXTERNAL_CITY_PRECISE",
+      "konumDetay": "Libadiye Cad. Çimen Sok. (Üsküdar / İstanbul)"
     },
     {
       "id": 1431165,
@@ -3178,7 +3178,7 @@
       "bakiye": 0,
       "bakiyeDurumu": "kapali",
       "konumKaynagi": "EXISTING_COORDINATE",
-      "konumDetay": "Mevcut Hassas Koordinat"
+      "konumDetay": "ANTALYA DÖŞEMEALTI Doğrulanmış Konum"
     },
     {
       "id": 440031,
@@ -3318,7 +3318,7 @@
       "bakiye": 0,
       "bakiyeDurumu": "kapali",
       "konumKaynagi": "EXISTING_COORDINATE",
-      "konumDetay": "Mevcut Hassas Koordinat"
+      "konumDetay": "BAYBURT BAYBURT MERKEZ Doğrulanmış Konum"
     },
     {
       "id": 1964877,
@@ -3998,7 +3998,7 @@
       "bakiye": 0,
       "bakiyeDurumu": "kapali",
       "konumKaynagi": "EXISTING_COORDINATE",
-      "konumDetay": "Mevcut Hassas Koordinat"
+      "konumDetay": "İSTANBUL TUZLA Doğrulanmış Konum"
     },
     {
       "id": 1961492,
@@ -4098,7 +4098,7 @@
       "bakiye": 0,
       "bakiyeDurumu": "kapali",
       "konumKaynagi": "EXISTING_COORDINATE",
-      "konumDetay": "Mevcut Hassas Koordinat"
+      "konumDetay": "MUŞ MALAZGİRT Doğrulanmış Konum"
     },
     {
       "id": 1977103,
@@ -4118,7 +4118,7 @@
       "bakiye": 0,
       "bakiyeDurumu": "kapali",
       "konumKaynagi": "EXISTING_COORDINATE",
-      "konumDetay": "Mevcut Hassas Koordinat"
+      "konumDetay": "İZMİR KARŞIYAKA Doğrulanmış Konum"
     },
     {
       "id": 457677,
@@ -4150,15 +4150,15 @@
       "ilce": "YUSUFELİ",
       "telefon": "",
       "yetkili": "",
-      "enlem": 39.914,
-      "boylam": 41.2721,
+      "enlem": 40.8108,
+      "boylam": 41.5271,
       "konumTipi": "tam_adres",
       "borc": 0,
       "alacak": 0,
       "bakiye": 0,
       "bakiyeDurumu": "kapali",
-      "konumKaynagi": "MAHALLE_PRECISE",
-      "konumDetay": "KAZIM KARABEKİR Mahallesi"
+      "konumKaynagi": "EXTERNAL_CITY_PRECISE",
+      "konumDetay": "Kazım Karabekir Mah. (Yusufeli / Artvin)"
     },
     {
       "id": 1975721,
@@ -4458,7 +4458,7 @@
       "bakiye": 12500,
       "bakiyeDurumu": "borclu",
       "konumKaynagi": "EXISTING_COORDINATE",
-      "konumDetay": "Mevcut Hassas Koordinat"
+      "konumDetay": "İSTANBUL MALTEPE Doğrulanmış Konum"
     },
     {
       "id": 1767312,
@@ -4738,7 +4738,7 @@
       "bakiye": 0,
       "bakiyeDurumu": "kapali",
       "konumKaynagi": "EXISTING_COORDINATE",
-      "konumDetay": "Mevcut Hassas Koordinat"
+      "konumDetay": "ERZİNCAN ERZİNCAN MERKEZ Doğrulanmış Konum"
     },
     {
       "id": 1195886,
@@ -4898,7 +4898,7 @@
       "bakiye": 0,
       "bakiyeDurumu": "kapali",
       "konumKaynagi": "EXISTING_COORDINATE",
-      "konumDetay": "Mevcut Hassas Koordinat"
+      "konumDetay": "ANKARA KAZAN Doğrulanmış Konum"
     },
     {
       "id": 830313,
@@ -4938,7 +4938,7 @@
       "bakiye": 0,
       "bakiyeDurumu": "kapali",
       "konumKaynagi": "EXISTING_COORDINATE",
-      "konumDetay": "Mevcut Hassas Koordinat"
+      "konumDetay": "ANKARA AKYURT Doğrulanmış Konum"
     },
     {
       "id": 1961766,
@@ -4950,15 +4950,15 @@
       "ilce": "BAYBURT MERKEZ",
       "telefon": "",
       "yetkili": "",
-      "enlem": 39.9056,
-      "boylam": 41.2785,
+      "enlem": 40.3666,
+      "boylam": 40.1046,
       "konumTipi": "tam_adres",
       "borc": 50000,
       "alacak": 50000,
       "bakiye": 0,
       "bakiyeDurumu": "kapali",
-      "konumKaynagi": "STREET_DOOR_NO",
-      "konumDetay": "Cumhuriyet Cad. No:102"
+      "konumKaynagi": "EXTERNAL_CITY_PRECISE",
+      "konumDetay": "Arpalı Beldesi, Cumhuriyet Mah. (Bayburt)"
     },
     {
       "id": 1959140,
@@ -5018,7 +5018,7 @@
       "bakiye": 0,
       "bakiyeDurumu": "kapali",
       "konumKaynagi": "EXISTING_COORDINATE",
-      "konumDetay": "Mevcut Hassas Koordinat"
+      "konumDetay": "TRABZON ORTAHİSAR Doğrulanmış Konum"
     },
     {
       "id": 1338291,
@@ -5318,7 +5318,7 @@
       "bakiye": 0,
       "bakiyeDurumu": "kapali",
       "konumKaynagi": "EXISTING_COORDINATE",
-      "konumDetay": "Mevcut Hassas Koordinat"
+      "konumDetay": "İSTANBUL ÜMRANİYE Doğrulanmış Konum"
     },
     {
       "id": 1973861,
@@ -5418,7 +5418,7 @@
       "bakiye": 0,
       "bakiyeDurumu": "kapali",
       "konumKaynagi": "EXISTING_COORDINATE",
-      "konumDetay": "Mevcut Hassas Koordinat"
+      "konumDetay": "SAMSUN ATAKUM Doğrulanmış Konum"
     },
     {
       "id": 1977133,
@@ -5438,7 +5438,7 @@
       "bakiye": 0,
       "bakiyeDurumu": "kapali",
       "konumKaynagi": "EXISTING_COORDINATE",
-      "konumDetay": "Mevcut Hassas Koordinat"
+      "konumDetay": "SAMSUN BAFRA Doğrulanmış Konum"
     },
     {
       "id": 1974543,
@@ -5530,15 +5530,15 @@
       "ilce": "ORTAHİSAR",
       "telefon": "",
       "yetkili": "",
-      "enlem": 39.907099,
-      "boylam": 41.270725,
+      "enlem": 41.0041,
+      "boylam": 39.7257,
       "konumTipi": "tam_adres",
       "borc": 30000,
       "alacak": 0,
       "bakiye": 30000,
       "bakiyeDurumu": "borclu",
-      "konumKaynagi": "STREET_DOOR_NO",
-      "konumDetay": "Cumhuriyet Cad. No:6"
+      "konumKaynagi": "EXTERNAL_CITY_PRECISE",
+      "konumDetay": "Cumhuriyet Mah. Şehir Sok. (Ortahisar / Trabzon)"
     },
     {
       "id": 439985,
@@ -5638,7 +5638,7 @@
       "bakiye": 0,
       "bakiyeDurumu": "kapali",
       "konumKaynagi": "EXISTING_COORDINATE",
-      "konumDetay": "Mevcut Hassas Koordinat"
+      "konumDetay": "ERZİNCAN ERZİNCAN MERKEZ Doğrulanmış Konum"
     },
     {
       "id": 1969212,
@@ -5658,7 +5658,7 @@
       "bakiye": 18000,
       "bakiyeDurumu": "borclu",
       "konumKaynagi": "EXISTING_COORDINATE",
-      "konumDetay": "Mevcut Hassas Koordinat"
+      "konumDetay": "ANTALYA ANTALYA MERKEZ Doğrulanmış Konum"
     },
     {
       "id": 1972481,
@@ -5678,7 +5678,7 @@
       "bakiye": 0,
       "bakiyeDurumu": "kapali",
       "konumKaynagi": "EXISTING_COORDINATE",
-      "konumDetay": "Mevcut Hassas Koordinat"
+      "konumDetay": "BURSA BURSA MERKEZ Doğrulanmış Konum"
     },
     {
       "id": 1960378,
@@ -5818,7 +5818,7 @@
       "bakiye": 0,
       "bakiyeDurumu": "kapali",
       "konumKaynagi": "EXISTING_COORDINATE",
-      "konumDetay": "Mevcut Hassas Koordinat"
+      "konumDetay": "İSTANBUL BAŞAKŞEHİR Doğrulanmış Konum"
     },
     {
       "id": 1977393,
@@ -6058,7 +6058,7 @@
       "bakiye": 0,
       "bakiyeDurumu": "kapali",
       "konumKaynagi": "EXISTING_COORDINATE",
-      "konumDetay": "Mevcut Hassas Koordinat"
+      "konumDetay": "BAYBURT BAYBURT MERKEZ Doğrulanmış Konum"
     },
     {
       "id": 1966835,
@@ -6178,7 +6178,7 @@
       "bakiye": 0,
       "bakiyeDurumu": "kapali",
       "konumKaynagi": "EXISTING_COORDINATE",
-      "konumDetay": "Mevcut Hassas Koordinat"
+      "konumDetay": "AĞRI AĞRI MERKEZ Doğrulanmış Konum"
     },
     {
       "id": 1970613,
@@ -6578,7 +6578,7 @@
       "bakiye": 0,
       "bakiyeDurumu": "kapali",
       "konumKaynagi": "EXISTING_COORDINATE",
-      "konumDetay": "Mevcut Hassas Koordinat"
+      "konumDetay": "MALATYA YEŞİLYURT Doğrulanmış Konum"
     },
     {
       "id": 1965556,
@@ -6718,7 +6718,7 @@
       "bakiye": 0,
       "bakiyeDurumu": "kapali",
       "konumKaynagi": "EXISTING_COORDINATE",
-      "konumDetay": "Mevcut Hassas Koordinat"
+      "konumDetay": "TOKAT TURHAL Doğrulanmış Konum"
     },
     {
       "id": 471457,
@@ -6858,7 +6858,7 @@
       "bakiye": 0,
       "bakiyeDurumu": "kapali",
       "konumKaynagi": "EXISTING_COORDINATE",
-      "konumDetay": "Mevcut Hassas Koordinat"
+      "konumDetay": "ANTALYA ANTALYA MERKEZ Doğrulanmış Konum"
     },
     {
       "id": 1036443,
@@ -7018,7 +7018,7 @@
       "bakiye": 0,
       "bakiyeDurumu": "kapali",
       "konumKaynagi": "EXISTING_COORDINATE",
-      "konumDetay": "Mevcut Hassas Koordinat"
+      "konumDetay": "SAMSUN ATAKUM Doğrulanmış Konum"
     },
     {
       "id": 1969022,
@@ -7118,7 +7118,7 @@
       "bakiye": 0,
       "bakiyeDurumu": "kapali",
       "konumKaynagi": "EXISTING_COORDINATE",
-      "konumDetay": "Mevcut Hassas Koordinat"
+      "konumDetay": "IĞDIR IĞDIR MERKEZ Doğrulanmış Konum"
     },
     {
       "id": 1978428,

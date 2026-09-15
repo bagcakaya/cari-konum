@@ -13,7 +13,8 @@ function normalizeTr(str) {
     .replace(/Ş/g, 'S').replace(/ş/g, 's')
     .replace(/Ö/g, 'O').replace(/ö/g, 'o')
     .replace(/Ç/g, 'C').replace(/ç/g, 'c')
-    .toUpperCase();
+    .toUpperCase()
+    .trim();
 }
 
 /**
@@ -141,7 +142,7 @@ const STREET_AXES = {
   },
 };
 
-// 3. Özel Bina, AVM, Site ve İş Merkezleri Veritabanı (En Yüksek Hassasiyet)
+// 3. Özel Bina, AVM, Site ve İş Merkezleri Veritabanı (Erzurum Hassas Noktaları)
 const LANDMARK_BUILDINGS = [
   // Şehit Polis Murat Ellik Bulvarı & Altuğ Park (Kullanıcı Görsel-1 Düzeltmesi)
   { pattern: /ALTUĞ PARK|ALTUG PARK|ALTUĞ SİT|ALTUG SIT/i, lat: 39.88280, lng: 41.24240, name: 'Altuğ Park / Sitesi (Şehit Polis Murat Ellik Blv No:2)' },
@@ -186,6 +187,20 @@ const LANDMARK_BUILDINGS = [
   { pattern: /PRESTİJ PARK|PRESTIJ PARK/i, lat: 39.92350, lng: 41.26300, name: 'Prestij Park (Korg. Zekai Aksakallı Cad No:8A)' },
   { pattern: /KOMBİNA CAD|KOMBINA CAD/i, lat: 39.91850, lng: 41.26140, name: 'Kombina Caddesi (Ömer Nasuhi Bilmen)' },
 ];
+
+// 4. Dış İl / İlçe Doğrulanmış Özel Koordinatlar (Erzurum cadde/mahalle isimleriyle çakışan dış firmalar)
+const SPECIFIC_EXTERNAL_COORDS = {
+  // IdeaSoft Yazılım (Üsküdar / İstanbul) - Erzurum Cumhuriyet Cad ile çakışması engellendi
+  'CR-000812': { lat: 41.0107, lng: 29.0746, detail: 'Libadiye Cad. Çimen Sok. (Üsküdar / İstanbul)' },
+  // Propos Yazılım (Ortahisar / Trabzon) - Erzurum Cumhuriyet Cad ile çakışması engellendi
+  'CR-000847': { lat: 41.0041, lng: 39.7257, detail: 'Cumhuriyet Mah. Şehir Sok. (Ortahisar / Trabzon)' },
+  // Niw Gross Market (Bayburt) - Erzurum Cumhuriyet Cad ile çakışması engellendi
+  'CR-000858': { lat: 40.3666, lng: 40.1046, detail: 'Arpalı Beldesi, Cumhuriyet Mah. (Bayburt)' },
+  // Evren Süt (İlkadım / Samsun) - Erzurum Kazım Karabekir Mah ile çakışması engellendi
+  'CR-000678': { lat: 41.2674, lng: 36.3290, detail: 'Kazım Karabekir Mah. (İlkadım / Samsun)' },
+  // Mavi Bilişim (Yusufeli / Artvin) - Erzurum Kazım Karabekir Mah ile çakışması engellendi
+  'CR-000228': { lat: 40.8108, lng: 41.5271, detail: 'Kazım Karabekir Mah. (Yusufeli / Artvin)' },
+};
 
 /**
  * Bir caddede kapı numarasına göre hassas konum interpolasyonu yapar.
@@ -234,26 +249,63 @@ function extractMahalle(addressText) {
 }
 
 /**
- * Hiyerarşik Hassas Konumlandırıcı
+ * Hiyerarşik Hassas Konumlandırıcı (v3.1 - İl Filtreli)
  * 1. ADIM: Adreste Mahalle Yoksa -> null döner (HARİTADA PİN GÖSTERİLMEZ!)
- * 2. ADIM: Mahalle Varsa -> Mahalle İçinde Özel Landmark / Bina / Site Eşleşmesi
- * 3. ADIM: Mahalle İçinde Sokak / Cadde ve Kapı Numarası Hassas İnterpolasyonu
- * 4. ADIM: Sokak/Cadde yoksa -> Hassas Mahalle Merkezi (Mikro-saçılımlı)
- * 5. ADIM: Dış İl/İlçe Mahalleli cariler için mevcut geocoded koordinat korunur
+ * 2. ADIM: İL FİLTRESİ -> Carinin ili Erzurum DEĞİLSE, ASLA Erzurum kurallarına sokulamaz!
+ * 3. ADIM: Erzurum Carileri İçin -> Özel Landmark / Bina / Site Eşleşmesi
+ * 4. ADIM: Erzurum Carileri İçin -> Sokak / Cadde ve Kapı Numarası Hassas İnterpolasyonu
+ * 5. ADIM: Erzurum Carileri İçin -> Hassas Mahalle Merkezi (Mikro-saçılımlı)
  */
 function resolveHierarchicalLocation(cari) {
   const address = (cari.adres || '').trim();
 
-  // KULLANICI KURALI: Adresinde Mahalle yoksa haritada gösterilmeyecek!
+  // 1. KULLANICI KURALI: Adresinde Mahalle yoksa haritada gösterilmeyecek!
   if (!hasMahalle(address)) {
     return null;
   }
 
+  // 2. KULLANICI KURALI: İL KONTROLÜ VE İZOLASYONU (City Filter)
+  const il = normalizeTr(cari.il || '').trim();
+  const isErzurum = il === 'ERZURUM' || il === '';
+
+  // ERZURUM DIŞINDAKİ FİRMALAR:
+  if (!isErzurum) {
+    // Özel tanımlı dış il doğrulanmış koordinatı var mı? (Görsel IdeaSoft, Propos, Evren Süt vb.)
+    if (cari.kod && SPECIFIC_EXTERNAL_COORDS[cari.kod]) {
+      const ext = SPECIFIC_EXTERNAL_COORDS[cari.kod];
+      return {
+        lat: ext.lat,
+        lng: ext.lng,
+        matchType: 'EXTERNAL_CITY_PRECISE',
+        detail: ext.detail,
+      };
+    }
+
+    // Mevcut bir dış il koordinatı varsa ve Erzurum sınırları içinde DEĞİLSE koru
+    if (cari.enlem && cari.boylam) {
+      const isAccidentalErzurum = (cari.enlem >= 39.5 && cari.enlem <= 40.5 && cari.boylam >= 40.8 && cari.boylam <= 42.0);
+      if (!isAccidentalErzurum) {
+        return {
+          lat: cari.enlem,
+          lng: cari.boylam,
+          matchType: 'EXISTING_COORDINATE',
+          detail: `${cari.il || ''} ${cari.ilce || ''} Doğrulanmış Konum`.trim(),
+        };
+      }
+    }
+
+    // Dış ilde olup kesin konumu bulunamayan cari Erzurum haritasına düşürülmez!
+    return null;
+  }
+
+  // =========================================================================
+  // BURADAN SONRASI YALNIZCA ERZURUM İÇİNDEKİ CARİLER İÇİNDİR
+  // =========================================================================
   const norm = normalizeTr(address);
   const normAd = normalizeTr(cari.ad || '');
   const combined = norm + ' ' + normAd;
 
-  // 1. ÖZEL LANDMARK / BİNA / SİTE EŞLEŞMESİ (En yüksek hassasiyet - Görsel 1 Altuğ Park vb.)
+  // 3. ÖZEL LANDMARK / BİNA / SİTE EŞLEŞMESİ (En yüksek hassasiyet - Görsel 1 Altuğ Park vb.)
   for (const lm of LANDMARK_BUILDINGS) {
     if (lm.pattern.test(combined)) {
       return {
@@ -265,10 +317,10 @@ function resolveHierarchicalLocation(cari) {
     }
   }
 
-  // 2. CADDE / SOKAK VE KAPI NUMARASI İNTERPOLASYONU (Mahalle İçinde)
+  // 4. CADDE / SOKAK VE KAPI NUMARASI İNTERPOLASYONU (Mahalle İçinde)
   const doorNo = extractDoorNumber(address);
 
-  // Şehit Polis Murat Ellik Bulvarı (Kullanıcı Bildirimi: Altuğ Park No:2 kuzeyde, Deniz Yapı güneyde)
+  // Şehit Polis Murat Ellik Bulvarı (Altuğ Park No:2 kuzeyde, Deniz Yapı güneyde)
   if (/MURAT ELLIK|MURAT ELLİK/i.test(norm)) {
     const coord = interpolateStreetNumber(STREET_AXES.MURAT_ELLIK, doorNo || 2);
     return { ...coord, matchType: doorNo ? 'STREET_DOOR_NO' : 'STREET_CENTER', detail: `Şht. Polis Murat Ellik Blv. No:${doorNo || 'Ortası'}` };
@@ -292,7 +344,7 @@ function resolveHierarchicalLocation(cari) {
     return { ...coord, matchType: doorNo ? 'STREET_DOOR_NO' : 'STREET_CENTER', detail: `Terminal Cad. No:${doorNo || 'Ortası'}` };
   }
 
-  // Cumhuriyet Caddesi
+  // Cumhuriyet Caddesi (Erzurum)
   if (/CUMHURIYET|CUMHURİYET/i.test(norm)) {
     const coord = interpolateStreetNumber(STREET_AXES.CUMHURIYET, doorNo || 35);
     return { ...coord, matchType: doorNo ? 'STREET_DOOR_NO' : 'STREET_CENTER', detail: `Cumhuriyet Cad. No:${doorNo || 'Ortası'}` };
@@ -352,7 +404,7 @@ function resolveHierarchicalLocation(cari) {
     return { ...coord, matchType: doorNo ? 'STREET_DOOR_NO' : 'STREET_CENTER', detail: `Menderes Cad. No:${doorNo || 'Ortası'}` };
   }
 
-  // 3. ADIM: MAHALLE MERKEZİ EŞLEŞMESİ (Sokak/Cadde bulunamadıysa)
+  // 5. ADIM: ERZURUM MAHALLE MERKEZİ EŞLEŞMESİ (Sokak/Cadde bulunamadıysa)
   const mahalle = extractMahalle(address);
   if (mahalle && MAHALLE_COORDS[mahalle]) {
     const mCoord = MAHALLE_COORDS[mahalle];
@@ -368,7 +420,7 @@ function resolveHierarchicalLocation(cari) {
     };
   }
 
-  // 4. ADIM: Dış İl / İlçe Mahalleli Cariler İçin Mevcut Geçerli Koordinat Korunur
+  // 6. ADIM: Erzurum İçi Mevcut Geçerli Koordinat Korunur
   if (cari.enlem && cari.boylam) {
     return {
       lat: cari.enlem,
@@ -390,20 +442,21 @@ function main() {
   const cariler = rawData.cariler || [];
 
   console.log('=================================================================');
-  console.log('   CARİRADAR: HİYERARŞİK HASSAS KONUMLANDIRMA MOTORU (v3.0)');
-  console.log('   (Mahalle Kontrolü ➔ Sokak/Cadde ➔ Kapı No Seviyesinde Eşleme)');
+  console.log('   CARİRADAR: HİYERARŞİK HASSAS KONUMLANDIRMA MOTORU (v3.1)');
+  console.log('   (İl Filtresi + Mahalle Kontrolü + Hassas Sokak/Kapı Eşleme)');
   console.log('=================================================================\n');
 
   let landmarkCount = 0;
   let doorNoCount = 0;
   let mahalleCount = 0;
+  let externalCityCount = 0;
   let keptCount = 0;
   let hiddenCount = 0;
 
   const updatedCariler = cariler.map((c) => {
     const res = resolveHierarchicalLocation(c);
     
-    // KURAL: Mahalle yoksa haritada pin olmayacak (enlem/boylam = null)
+    // KURAL: Mahalle yoksa veya konumu doğrulanamadıysa haritada pin olmayacak (enlem/boylam = null)
     if (!res) {
       hiddenCount++;
       return {
@@ -418,6 +471,7 @@ function main() {
     if (res.matchType === 'LANDMARK_BUILDING') landmarkCount++;
     else if (res.matchType === 'STREET_DOOR_NO' || res.matchType === 'STREET_CENTER') doorNoCount++;
     else if (res.matchType === 'MAHALLE_PRECISE') mahalleCount++;
+    else if (res.matchType === 'EXTERNAL_CITY_PRECISE') externalCityCount++;
     else keptCount++;
 
     return {
@@ -430,10 +484,11 @@ function main() {
   });
 
   console.log(`Toplam Cari: ${cariler.length}`);
-  console.log(`🏛️  Özel Bina / AVM / Site Seviyesinde: ${landmarkCount}`);
-  console.log(`🚪 Sokak & Kapı No İnterpolasyonu: ${doorNoCount}`);
-  console.log(`🏘️  Hassas Mahalle Seviyesinde: ${mahalleCount}`);
-  console.log(`📌 Korunan Harici Hassas Koordinatlar: ${keptCount}`);
+  console.log(`🏛️  Erzurum Özel Bina / AVM / Site: ${landmarkCount}`);
+  console.log(`🚪 Erzurum Sokak & Kapı No İnterpolasyonu: ${doorNoCount}`);
+  console.log(`🏘️  Erzurum Hassas Mahalle Seviyesinde: ${mahalleCount}`);
+  console.log(`📍 Dış İl Doğrulanmış Konum (IdeaSoft, Propos vb.): ${externalCityCount}`);
+  console.log(`📌 Korunan Harici Hassas İl/İlçe Koordinatları: ${keptCount}`);
   console.log(`🚫 Mahalle Olmayan / Haritada Gizlenen Cariler: ${hiddenCount}\n`);
 
   // Dosyalara Kaydet
@@ -446,8 +501,15 @@ function main() {
     console.log(`✅ [2/2] Web verisi güncellendi: ${webDataFile}`);
   }
 
+  // web/dist klasörü varsa onu da güncelle
+  const webDistFile = path.join(__dirname, '..', 'web', 'dist', 'data', 'cariler.json');
+  if (fs.existsSync(path.dirname(webDistFile))) {
+    fs.writeFileSync(webDistFile, payload, 'utf8');
+    console.log(`✅ [3/3] Web dist verisi güncellendi: ${webDistFile}`);
+  }
+
   console.log('\n=================================================================');
-  console.log('   HİYERARŞİK EŞLEŞTİRME BAŞARIYLA TAMAMLANDI!');
+  console.log('   İL FİLTRESİ VE HİYERARŞİK EŞLEŞTİRME BAŞARIYLA TAMAMLANDI!');
   console.log('=================================================================');
 }
 
