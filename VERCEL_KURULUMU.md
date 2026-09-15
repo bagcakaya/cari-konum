@@ -1,93 +1,55 @@
-# Cari Konum - Vercel ve Mobil Kurulum Kılavuzu 📱
+# CariRadar - Vercel Canlı Dağıtım ve PWA Kurulum Kılavuzu 🚀📱
 
-Bu kılavuz, uygulamanızı **Vercel** üzerinde 7/24 ücretsiz olarak yayına almanız, cep telefonunuzun ana ekranına uygulama olarak eklemeniz ve **OneSignal Web Push** bildirimlerini yapılandırmanız için hazırlanmıştır.
-
----
-
-## 1. Adım: Vercel Üzerinde Yayınlama (Deploy)
-
-Uygulamanızı Vercel'e yüklemek için en kolay iki yöntem şunlardır:
-
-### Yöntem A: GitHub ile Otomatik Dağıtım (Önerilen)
-1. **GitHub Hesabınıza Yükleyin:**
-   * Bilgisayarınızda `c:\Users\Mert\Desktop\Cari Konum` klasörünü bir Git deposu olarak GitHub hesabınıza aktarın (Örn: `cari-konum`).
-2. **Vercel'e Bağlayın:**
-   * [vercel.com](https://vercel.com) adresine gidin ve GitHub ile giriş yapın (Tamamen ücretsizdir).
-   * **"Add New Project"** butonuna tıklayın.
-   * `cari-konum` deponuzu seçin.
-3. **Ayarlar:**
-   * **Root Directory (Kök Dizin):** `web` klasörünü seçin.
-   * **Framework Preset:** `Vite` (Vercel otomatik tanır).
-   * **"Deploy"** butonuna tıklayın.
-4. Yaklaşık 30 saniye içinde uygulamanız `https://cari-konum.vercel.app` gibi bir bağlantıyla dünya genelinde yayında olacaktır!
+Bu kılavuz, uygulamanızı **Vercel** üzerinde 7/24 ücretsiz canlıya almanız, telefonunuza (Android veya iPhone) **"Ana Ekrana Ekle"** diyerek native bir mobil uygulama gibi kurmanız ve verileri eksiksiz kullanmanız için hazırlanmıştır.
 
 ---
 
-### Yöntem B: Komut Satırından Vercel CLI ile (Doğrudan)
-Eğer GitHub kullanmak istemiyorsanız, terminalden 1 komutla doğrudan yükleyebilirsiniz:
-```bash
-cd "c:\Users\Mert\Desktop\Cari Konum\web"
-npx vercel
-```
-Ekrana gelen sorulara `Y` (Evet) diyerek 1 dakikada yayına alabilirsiniz.
+## 1. Adım: Vercel Üzerinde 1 Tıkla Canlıya Alma (Deploy)
+
+Tüm proje dosyalarınız, Vercel yapılandırmaları (`vercel.json`), PWA servisleri (`sw.js`, `manifest.json`) ve en güncel 371 cari verisi (`cariler.json`) GitHub deponuza (`bagcakaya/cari-konum`) aktarılmıştır.
+
+1. **[vercel.com](https://vercel.com)** adresine gidin ve GitHub hesabınızla giriş yapın (Ücretsizdir).
+2. Sağ üstteki **"Add New..." ➔ "Project"** butonuna tıklayın.
+3. Karşınıza gelen listeden **`cari-konum`** deponuzun yanındaki **"Import"** butonuna basın.
+4. **Hiçbir ayarı değiştirmenize gerek yoktur!** 
+   * Proje köküne ve `web` klasörüne otomatik derleme kuralları (`vercel.json`) yerleştirilmiştir.
+   * Framework olarak `Vite` otomatik seçilecektir.
+5. Doğrudan mavi **"Deploy"** butonuna tıklayın!
+6. Yaklaşık 30-45 saniye içinde uygulamanız dünya genelinde `https://cari-konum-xxx.vercel.app` (veya belirleyeceğiniz özel bir alan adı) üzerinden canlıya alınacaktır! 🎉
 
 ---
 
-## 2. Adım: Cep Telefonunda "Ana Ekrana Ekle" (PWA Kurulumu)
+## 2. Adım: Verilerin Canlıda Yüklü Gelmesi
 
-Uygulama linkinizi (`https://sizin-uygulamaniz.vercel.app`) telefonunuzda açın:
-
-### 🍏 iPhone (iOS / Safari) Kullanıcıları İçin:
-1. Safari tarayıcısında linki açın.
-2. Ekranın alt ortasındaki **Paylaş** simgesine (yukarı oklu kutucuk) dokunun.
-3. Aşağı kaydırıp **"Ana Ekrana Ekle" (Add to Home Screen)** seçeneğine dokunun.
-4. Sağ üstteki **"Ekle"** butonuna basın.
-5. Telefonunuzun ana ekranına **Cari Konum** ikonu yerleşecektir. Artık normal bir mobil uygulama gibi tam ekran açılır!
-
-### 🤖 Android (Google Chrome) Kullanıcıları İçin:
-1. Chrome tarayıcısında linki açın.
-2. Sağ üstteki **üç nokta (⋮)** menüsüne dokunun.
-3. **"Uygulamayı Yükle"** veya **"Ana Ekrana Ekle"** seçeneğine dokunun.
-4. Onaylayın. Uygulama telefonunuza native uygulama gibi kurulur.
+* **Çift Katmanlı Veri Güvencesi:** En güncel 371 cari verisi (`cariler.json`) uygulamanın içerisine doğrudan gömülmüştür. Vercel linkine ilk girdiğiniz anda hiçbir bekleme süresi olmadan tüm harita pinleri ve cari listesi anında açılır.
+* **Otomatik PWA Önbelleği:** Service Worker (`sw.js`), ilk açılışta `cariler.json` dosyasını telefonun yerel hafızasına kaydeder. İnternetiniz çekmese dahi uygulama verileriyle birlikte açılır.
+* **Canlı Veri Güncelleme:** Uygulama açıkken sağ üstteki döngü simgesine basıldığında sunucudaki en güncel bakiyeler anlık olarak yenilenir.
 
 ---
 
-## 3. Adım: OneSignal Web Push Bildirimleri (Ücretsiz)
+## 3. Adım: Cep Telefonunda "Ana Ekrana Ekle" (PWA Kurulumu)
 
-Mobil tarayıcınızda ekran açıkken veya PWA çalışırken 200m bildirimleri doğrudan işletim sistemi üzerinden iletilir. İsterseniz OneSignal Web Push servisini de ücretsiz bağlayabilirsiniz:
+Vercel linkinizi telefonunuzda açtığınızda üst barda mavi **"Ana Ekrana Ekle"** butonunu göreceksiniz. Butona dokunduğunuzda cihazınıza göre rehber veya yükleme penceresi açılır:
 
-1. [onesignal.com](https://onesignal.com) adresinden ücretsiz bir hesap oluşturun.
-2. **"New App/Website"** seçeneğine tıklayın.
-3. Platform olarak **"Web Push"** seçin.
-4. Site URL kısmına Vercel adresinizi (Örn: `https://cari-konum.vercel.app`) yazın.
-5. **Settings > Keys & IDs** bölümünden **"OneSignal App ID"** kodunu kopyalayın.
-6. `web/.env` dosyası oluşturup içine ekleyin:
-   ```env
-   VITE_ONESIGNAL_APP_ID=kopyaladiginiz_app_id
-   ```
-7. Vercel paneline de **Environment Variables** kısmından bu anahtarı ekleyip kaydedin.
+### 🤖 Android (Google Chrome / Samsung Internet / Edge):
+1. Sitedeki **"Ana Ekrana Ekle"** butonuna veya tarayıcının sağ üstündeki **üç nokta (⋮)** menüsüne dokunun.
+2. **"Uygulamayı Yükle"** veya **"Ana ekrana ekle"** seçeneğine basın.
+3. Onaylayın. CariRadar telefonunuza tıpkı Play Store'dan indirilmiş gibi logosuyla birlikte kurulur ve tam ekran çalışır.
 
----
-
-## 4. Adım: SQL Server'daki Yeni Değişiklikleri Senkronize Etme
-
-ERP'nize yeni bir fatura kesildiğinde, borç/alacak değiştiğinde veya yeni bir müşteri eklendiğinde:
-
-1. Masaüstünüzdeki **`Verileri-Guncelle.bat`** dosyasına çift tıklayın.
-2. Program otomatik olarak SQL Server (`POLATLAR2025`) veritabanını tarar, son bakiyeleri eşitler ve dosyaları günceller.
-3. Vercel uygulamanızı açtığınızda ekrandaki **"Yenile" (Döngü)** simgesine bastığınız anda en güncel veriler telefona yansır!
+### 🍏 iPhone (iOS / Safari):
+1. Vercel linkini **Safari** tarayıcısında açın.
+2. Sitedeki **"Ana Ekrana Ekle"** butonuna dokunun (Rehber ekrana gelir).
+3. Safari'nin alt ortasındaki **Paylaş (Share)** simgesine (kare ve yukarı ok) dokunun.
+4. Menüde aşağı kaydırıp **"Ana Ekrana Ekle"** (Add to Home Screen) seçeneğine basın.
+5. Sağ üstteki **"Ekle"** düğmesine dokunun.
+6. Telefonunuzun ana ekranında CariRadar ikonu oluşur. Üst/alt tarayıcı çubukları olmadan tam ekran bir iOS uygulaması olarak açılır!
 
 ---
 
-## 🎯 Ofisten Test Etme (Simülasyon Modu)
+## 4. Adım: SQL Server (POLATLAR2025) Verilerini Canlıya Aktarma
 
-Uygulamanın 200m çapına girildiğinde verdiği tepkiyi test etmek için sahaya çıkmanıza gerek yoktur:
-
-1. Uygulama ekranının sağ üstündeki **Hedef / Nişangah (🎯)** simgesine tıklayın.
-2. Ekranda sarı renkli *"Test Modu Aktif"* uyarısı belirecektir.
-3. Haritada kırmızı veya yeşil pinli herhangi bir carinin çok yakınına (200m içine) haritaya dokunun.
-4. Anında:
-   * Cihazınız titreşir (mobil cihazdaysa).
-   * Ekranda büyük **"📍 [Firma Adı] firmasına yaklaştınız, uğramak ister misiniz?"** penceresi açılır.
-   * **[Evet]** butonuna bastığınızda firmanın güncel Borç, Alacak, Net Bakiye ve iletişim kartı açılır.
-   * **[Hayır]** dediğinizde kapanır.
+Masaüstünüzde fatura kesildiğinde veya borç/alacak değiştiğinde:
+1. `Verileri-Guncelle.bat` çalıştırılır.
+2. Git ile push edilir (`git add . ; git commit -m "data update" ; git push`).
+3. Vercel yaklaşık 20 saniyede otomatik yeni veriyi canlıya alır.
+4. Telefondan "Yenile" butonuna basıldığında yeni bakiyeler ekrana yansır.

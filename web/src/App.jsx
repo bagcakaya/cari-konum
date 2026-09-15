@@ -4,6 +4,8 @@ import Map from './components/Map';
 import CariList from './components/CariList';
 import CariDetailModal from './components/CariDetailModal';
 import ProximityAlertModal from './components/ProximityAlertModal';
+import InstallPromptModal from './components/InstallPromptModal';
+import initialCarilerData from './data/cariler.json';
 import { calculateDistance } from './utils/distance';
 import {
   initOneSignal,
@@ -18,7 +20,7 @@ const STORAGE_KEY_PROXIMITY = 'CARIRADAR_PROXIMITY_THRESHOLD';
 const COOLDOWN_MS = 30 * 60 * 1000;
 
 export default function App() {
-  const [allCariler, setAllCariler] = useState([]);
+  const [allCariler, setAllCariler] = useState(() => initialCarilerData?.cariler || []);
   const [userLocation, setUserLocation] = useState(null);
   const [isTracking, setIsTracking] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -51,8 +53,9 @@ export default function App() {
   // Test / Simülasyon Durumu
   const [isSimulating, setIsSimulating] = useState(false);
 
-  // PWA Yükleme Prompt'u
+  // PWA Yükleme Prompt'u & Kurulum Modalı
   const [deferredPrompt, setDeferredPrompt] = useState(null);
+  const [isInstallModalOpen, setIsInstallModalOpen] = useState(false);
 
   // Bildirim geçmişi (CariId -> Son bildirim zamanı)
   const notificationCooldowns = useRef({});
@@ -64,9 +67,11 @@ export default function App() {
       const res = await fetch('/data/cariler.json?t=' + Date.now());
       if (!res.ok) throw new Error('Veri dosyası bulunamadı');
       const data = await res.json();
-      setAllCariler(data.cariler || []);
+      if (data.cariler && Array.isArray(data.cariler) && data.cariler.length > 0) {
+        setAllCariler(data.cariler);
+      }
     } catch (err) {
-      console.error('Veri yükleme hatası:', err);
+      console.error('Veri yükleme hatası (mevcut yerel veri kullanılıyor):', err);
     } finally {
       setIsRefreshing(false);
     }
@@ -267,11 +272,19 @@ export default function App() {
 
   // PWA Kurulum Butonu
   const handleInstallPWA = async () => {
-    if (!deferredPrompt) return;
-    deferredPrompt.prompt();
-    const { outcome } = await deferredPrompt.userChoice;
-    if (outcome === 'accepted') {
-      setDeferredPrompt(null);
+    if (deferredPrompt) {
+      try {
+        deferredPrompt.prompt();
+        const { outcome } = await deferredPrompt.userChoice;
+        if (outcome === 'accepted') {
+          setDeferredPrompt(null);
+        }
+      } catch (e) {
+        setIsInstallModalOpen(true);
+      }
+    } else {
+      // iOS Safari veya tarayıcı menüsü rehberini aç
+      setIsInstallModalOpen(true);
     }
   };
 
@@ -363,6 +376,18 @@ export default function App() {
         cari={selectedCari}
         onClose={() => setSelectedCari(null)}
         onTestProximity={handleTestProximityForCari}
+      />
+
+      {/* PWA Kurulum & Ana Ekrana Ekle Modal */}
+      <InstallPromptModal
+        isOpen={isInstallModalOpen}
+        onClose={() => setIsInstallModalOpen(false)}
+        onInstall={() => {
+          if (deferredPrompt) {
+            deferredPrompt.prompt();
+          }
+        }}
+        hasDeferredPrompt={!!deferredPrompt}
       />
     </div>
   );

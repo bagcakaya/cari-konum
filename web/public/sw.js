@@ -1,14 +1,16 @@
-// CariRadar - Yüksek Güvenilirlikli Modern PWA Service Worker (v3)
-const CACHE_NAME = 'cari-radar-v3';
+// CariRadar - Yüksek Güvenilirlikli Modern PWA Service Worker (v4)
+const CACHE_NAME = 'cari-radar-v4';
 
-// Kritik statik dosyalar (çevrimdışı fallback için)
+// Kritik statik dosyalar (çevrimdışı fallback ve ilk açılış hızı için)
 const PRECACHE_ASSETS = [
   '/',
   '/index.html',
   '/manifest.json',
   '/favicon.png',
+  '/apple-touch-icon.png',
   '/icons/icon-192.png',
-  '/icons/icon-512.png'
+  '/icons/icon-512.png',
+  '/data/cariler.json'
 ];
 
 // 1. Kurulum: Hemen aktifleş ve eski cache bekleme

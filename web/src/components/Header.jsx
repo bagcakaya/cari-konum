@@ -52,14 +52,14 @@ export default function Header({
           <option value={500}>500m</option>
         </select>
         {/* PWA Yukle / Ana Ekrana Ekle Butonu */}
-        {deferredPrompt && (
+        {(typeof window !== 'undefined' && !window.matchMedia('(display-mode: standalone)').matches && !window.navigator.standalone) && (
           <button
             onClick={onInstallPWA}
-            className="px-2.5 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-500 active:bg-blue-700 text-white text-xs font-semibold flex items-center gap-1 shadow-md shadow-blue-600/30 transition-all cursor-pointer"
-            title="Uygulamayı Ana Ekrana Ekle"
+            className="px-2.5 py-1.5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 active:opacity-90 text-white text-xs font-semibold flex items-center gap-1.5 shadow-md shadow-blue-600/30 transition-all cursor-pointer"
+            title="Uygulamayı Ana Ekrana Ekle (PWA)"
           >
             <Download size={14} />
-            <span>Yükle</span>
+            <span>Ana Ekrana Ekle</span>
           </button>
         )}
 
