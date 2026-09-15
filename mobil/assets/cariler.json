@@ -70,15 +70,15 @@
       "ilce": "YAKUTİYE",
       "telefon": "",
       "yetkili": "",
-      "enlem": 39.8857,
-      "boylam": 41.25155,
+      "enlem": null,
+      "boylam": null,
       "konumTipi": "tam_adres",
       "borc": 0,
       "alacak": 0,
       "bakiye": 0,
       "bakiyeDurumu": "kapali",
-      "konumKaynagi": "MAHALLE_PRECISE",
-      "konumDetay": "ADNAN MENDERES Mahallesi"
+      "konumKaynagi": null,
+      "konumDetay": "Yetersiz Adres Detayı (Sadece Mahalle - Haritada Gizli)"
     },
     {
       "id": 1195319,
@@ -270,15 +270,15 @@
       "ilce": "YAKUTİYE",
       "telefon": "",
       "yetkili": "",
-      "enlem": 39.93782,
-      "boylam": 41.28453,
+      "enlem": 39.909,
+      "boylam": 41.28,
       "konumTipi": "tam_adres",
       "borc": 24000,
       "alacak": 24000,
       "bakiye": 0,
       "bakiyeDurumu": "kapali",
-      "konumKaynagi": "EXISTING_COORDINATE",
-      "konumDetay": "Mevcut Hassas Koordinat"
+      "konumKaynagi": "LANDMARK_BUILDING",
+      "konumDetay": "Meriç Evler (Gökdeniz Cad)"
     },
     {
       "id": 1768296,
@@ -318,7 +318,7 @@
       "bakiye": 0,
       "bakiyeDurumu": "kapali",
       "konumKaynagi": "LANDMARK_BUILDING",
-      "konumDetay": "Kombina Caddesi (Ömer Nasuhi Bilmen)"
+      "konumDetay": "Kombina Caddesi Makeart (Ömer Nasuhi Bilmen)"
     },
     {
       "id": 1973881,
@@ -870,15 +870,15 @@
       "ilce": "YAKUTİYE",
       "telefon": "",
       "yetkili": "",
-      "enlem": 39.90285,
-      "boylam": 41.271,
+      "enlem": 39.903,
+      "boylam": 41.2715,
       "konumTipi": "tam_adres",
       "borc": 25000,
       "alacak": 25000,
       "bakiye": 0,
       "bakiyeDurumu": "kapali",
-      "konumKaynagi": "MAHALLE_PRECISE",
-      "konumDetay": "MURATPAŞA Mahallesi"
+      "konumKaynagi": "LANDMARK_BUILDING",
+      "konumDetay": "Bican Sokak No:2 (Muratpaşa)"
     },
     {
       "id": 1971005,
@@ -1057,8 +1057,8 @@
       "alacak": 40000,
       "bakiye": -32000,
       "bakiyeDurumu": "alacakli",
-      "konumKaynagi": "MAHALLE_PRECISE",
-      "konumDetay": "GEZ Mahallesi"
+      "konumKaynagi": "MAHALLE_DETAILED_STREET",
+      "konumDetay": "GEZ Mah. (Sokak/Bina Detaylı Yerleşim)"
     },
     {
       "id": 1430203,
@@ -1090,15 +1090,15 @@
       "ilce": "YAKUTİYE",
       "telefon": "",
       "yetkili": "",
-      "enlem": 39.90215,
-      "boylam": 41.27145,
+      "enlem": 39.903672,
+      "boylam": 41.27181,
       "konumTipi": "tam_adres",
       "borc": 45000,
       "alacak": 0,
       "bakiye": 45000,
       "bakiyeDurumu": "borclu",
-      "konumKaynagi": "MAHALLE_PRECISE",
-      "konumDetay": "MURAT PAŞA Mahallesi"
+      "konumKaynagi": "STREET_CENTER",
+      "konumDetay": "Haşıl Efendi Cad. No:Ortası"
     },
     {
       "id": 1766649,
@@ -1357,8 +1357,8 @@
       "alacak": 40000,
       "bakiye": 37000,
       "bakiyeDurumu": "borclu",
-      "konumKaynagi": "MAHALLE_PRECISE",
-      "konumDetay": "SALTUKLU Mahallesi"
+      "konumKaynagi": "MAHALLE_DETAILED_STREET",
+      "konumDetay": "SALTUKLU Mah. (Sokak/Bina Detaylı Yerleşim)"
     },
     {
       "id": 464506,
@@ -1370,15 +1370,15 @@
       "ilce": "YAKUTİYE",
       "telefon": "",
       "yetkili": "",
-      "enlem": 39.90745,
-      "boylam": 41.26555,
+      "enlem": 39.9074,
+      "boylam": 41.2655,
       "konumTipi": "tam_adres",
       "borc": 59500.1,
       "alacak": 59500.1,
       "bakiye": 0,
       "bakiyeDurumu": "kapali",
-      "konumKaynagi": "MAHALLE_PRECISE",
-      "konumDetay": "LALAPAŞA Mahallesi"
+      "konumKaynagi": "LANDMARK_BUILDING",
+      "konumDetay": "Uğur İş Merkezi (Cennet Çeşme Sok)"
     },
     {
       "id": 1967298,
@@ -1417,8 +1417,8 @@
       "alacak": 40000,
       "bakiye": 35000,
       "bakiyeDurumu": "borclu",
-      "konumKaynagi": "MAHALLE_PRECISE",
-      "konumDetay": "MÜFTÜ SOLAKZADE Mahallesi"
+      "konumKaynagi": "MAHALLE_DETAILED_STREET",
+      "konumDetay": "MÜFTÜ SOLAKZADE Mah. (Sokak/Bina Detaylı Yerleşim)"
     },
     {
       "id": 1961257,
@@ -1430,15 +1430,15 @@
       "ilce": "YAKUTİYE",
       "telefon": "",
       "yetkili": "",
-      "enlem": 39.914,
-      "boylam": 41.27345,
+      "enlem": 39.9135,
+      "boylam": 41.2725,
       "konumTipi": "tam_adres",
       "borc": 0,
       "alacak": 0,
       "bakiye": 0,
       "bakiyeDurumu": "kapali",
-      "konumKaynagi": "MAHALLE_PRECISE",
-      "konumDetay": "KAZIM KARABEKİR Mahallesi"
+      "konumKaynagi": "LANDMARK_BUILDING",
+      "konumDetay": "Erkonut Apt (Demirciler Cad)"
     },
     {
       "id": 1966181,
@@ -1777,8 +1777,8 @@
       "alacak": 12120,
       "bakiye": 0,
       "bakiyeDurumu": "kapali",
-      "konumKaynagi": "MAHALLE_PRECISE",
-      "konumDetay": "LALAPAŞA Mahallesi"
+      "konumKaynagi": "LANDMARK_BUILDING",
+      "konumDetay": "Duygu Sitesi (Lalapaşa No:13)"
     },
     {
       "id": 441511,
@@ -1910,15 +1910,15 @@
       "ilce": "YAKUTİYE",
       "telefon": "",
       "yetkili": "",
-      "enlem": 39.9052,
-      "boylam": 41.276,
+      "enlem": 39.9045,
+      "boylam": 41.277,
       "konumTipi": "tam_adres",
       "borc": 6000,
       "alacak": 6000,
       "bakiye": 0,
       "bakiyeDurumu": "kapali",
-      "konumKaynagi": "MAHALLE_PRECISE",
-      "konumDetay": "RABİA ANA Mahallesi"
+      "konumKaynagi": "LANDMARK_BUILDING",
+      "konumDetay": "2. Kars Kapı Caddesi"
     },
     {
       "id": 1969646,
@@ -1930,15 +1930,15 @@
       "ilce": "YAKUTİYE",
       "telefon": "",
       "yetkili": "",
-      "enlem": 39.91365,
-      "boylam": 41.27255,
+      "enlem": null,
+      "boylam": null,
       "konumTipi": "tam_adres",
       "borc": 62500,
       "alacak": 62500,
       "bakiye": 0,
       "bakiyeDurumu": "kapali",
-      "konumKaynagi": "MAHALLE_PRECISE",
-      "konumDetay": "KAZIM KARABEKİR Mahallesi"
+      "konumKaynagi": null,
+      "konumDetay": "Yetersiz Adres Detayı (Sadece Mahalle - Haritada Gizli)"
     },
     {
       "id": 460276,
@@ -1950,15 +1950,15 @@
       "ilce": "PALANDÖKEN",
       "telefon": "",
       "yetkili": "",
-      "enlem": 39.88165,
-      "boylam": 41.26645,
+      "enlem": 39.882,
+      "boylam": 41.266,
       "konumTipi": "tam_adres",
       "borc": 69500,
       "alacak": 175500,
       "bakiye": -106000,
       "bakiyeDurumu": "alacakli",
-      "konumKaynagi": "MAHALLE_PRECISE",
-      "konumDetay": "YUNUS EMRE Mahallesi"
+      "konumKaynagi": "LANDMARK_BUILDING",
+      "konumDetay": "Özyunus Sitesi (Özyunus Sok)"
     },
     {
       "id": 458565,
@@ -2157,8 +2157,8 @@
       "alacak": 0,
       "bakiye": 0,
       "bakiyeDurumu": "kapali",
-      "konumKaynagi": "MAHALLE_PRECISE",
-      "konumDetay": "HÜSEYİN AVNİ ULAŞ Mahallesi"
+      "konumKaynagi": "MAHALLE_DETAILED_STREET",
+      "konumDetay": "HÜSEYİN AVNİ ULAŞ Mah. (Sokak/Bina Detaylı Yerleşim)"
     },
     {
       "id": 1142268,
@@ -2178,7 +2178,7 @@
       "bakiye": 0,
       "bakiyeDurumu": "kapali",
       "konumKaynagi": "LANDMARK_BUILDING",
-      "konumDetay": "Erzurum Evleri (Yüzbaşı Sok/Cumhuriyet)"
+      "konumDetay": "Erzurum Evleri (Cumhuriyet/Yüzbaşı Sk)"
     },
     {
       "id": 440986,
@@ -2210,15 +2210,15 @@
       "ilce": "PALANDÖKEN",
       "telefon": "",
       "yetkili": "",
-      "enlem": 39.8787,
-      "boylam": 41.24245,
+      "enlem": 39.876,
+      "boylam": 41.2415,
       "konumTipi": "tam_adres",
       "borc": 113000,
       "alacak": 113000,
       "bakiye": 0,
       "bakiyeDurumu": "kapali",
-      "konumKaynagi": "MAHALLE_PRECISE",
-      "konumDetay": "HÜSEYİN AVNİ ULAŞ Mahallesi"
+      "konumKaynagi": "LANDMARK_BUILDING",
+      "konumDetay": "Sabuncu Sokak (Hüseyin Avni Ulaş No:6-E)"
     },
     {
       "id": 440013,
@@ -2270,15 +2270,15 @@
       "ilce": "YAKUTİYE",
       "telefon": "",
       "yetkili": "",
-      "enlem": 39.9153,
-      "boylam": 41.25755,
+      "enlem": 39.9127,
+      "boylam": 41.2571,
       "konumTipi": "tam_adres",
       "borc": 322099.99,
       "alacak": 322099.99,
       "bakiye": 0,
       "bakiyeDurumu": "kapali",
-      "konumKaynagi": "MAHALLE_PRECISE",
-      "konumDetay": "ÖMER NASUHİ BİLMEN Mahallesi"
+      "konumKaynagi": "LANDMARK_BUILDING",
+      "konumDetay": "Almela Apt (Somunoğlu Cad No:136)"
     },
     {
       "id": 441002,
@@ -2337,8 +2337,8 @@
       "alacak": 16000,
       "bakiye": 0,
       "bakiyeDurumu": "kapali",
-      "konumKaynagi": "MAHALLE_PRECISE",
-      "konumDetay": "LALAPAŞA Mahallesi"
+      "konumKaynagi": "MAHALLE_DETAILED_STREET",
+      "konumDetay": "LALAPAŞA Mah. (Sokak/Bina Detaylı Yerleşim)"
     },
     {
       "id": 1971614,
@@ -2390,15 +2390,15 @@
       "ilce": "AZİZİYE",
       "telefon": "",
       "yetkili": "",
-      "enlem": 39.945,
-      "boylam": 41.14455,
+      "enlem": 39.9385,
+      "boylam": 41.172,
       "konumTipi": "tam_adres",
       "borc": 604780,
       "alacak": 578280,
       "bakiye": 26500,
       "bakiyeDurumu": "borclu",
-      "konumKaynagi": "MAHALLE_PRECISE",
-      "konumDetay": "ILICA Mahallesi"
+      "konumKaynagi": "LANDMARK_BUILDING",
+      "konumDetay": "E-80 Karayolu Bulvarı (Ilıca)"
     },
     {
       "id": 471216,
@@ -2430,15 +2430,15 @@
       "ilce": "İLKADIM",
       "telefon": "",
       "yetkili": "",
-      "enlem": 41.2674,
-      "boylam": 36.329,
+      "enlem": null,
+      "boylam": null,
       "konumTipi": "tam_adres",
       "borc": 255000,
       "alacak": 255000,
       "bakiye": 0,
       "bakiyeDurumu": "kapali",
-      "konumKaynagi": "EXTERNAL_CITY_PRECISE",
-      "konumDetay": "Kazım Karabekir Mah. (İlkadım / Samsun)"
+      "konumKaynagi": null,
+      "konumDetay": "Yetersiz Adres Detayı (Sadece Mahalle - Haritada Gizli)"
     },
     {
       "id": 1976921,
@@ -2450,15 +2450,15 @@
       "ilce": "YAKUTİYE",
       "telefon": "",
       "yetkili": "",
-      "enlem": 39.93852,
-      "boylam": 41.28553,
+      "enlem": 39.91,
+      "boylam": 41.282,
       "konumTipi": "tam_adres",
       "borc": 37500,
       "alacak": 37500,
       "bakiye": 0,
       "bakiyeDurumu": "kapali",
-      "konumKaynagi": "EXISTING_COORDINATE",
-      "konumDetay": "Mevcut Hassas Koordinat"
+      "konumKaynagi": "LANDMARK_BUILDING",
+      "konumDetay": "Toptancılar Sitesi (Kurtuluş)"
     },
     {
       "id": 450436,
@@ -2510,15 +2510,15 @@
       "ilce": "AZİZİYE",
       "telefon": "",
       "yetkili": "",
-      "enlem": 39.92365,
-      "boylam": 41.20245,
+      "enlem": 39.923211,
+      "boylam": 41.206579,
       "konumTipi": "tam_adres",
       "borc": 56800,
       "alacak": 56800,
       "bakiye": 0,
       "bakiyeDurumu": "kapali",
-      "konumKaynagi": "MAHALLE_PRECISE",
-      "konumDetay": "SELÇUKLU Mahallesi"
+      "konumKaynagi": "STREET_DOOR_NO",
+      "konumDetay": "Olimpiyat Cad. No:3"
     },
     {
       "id": 1963176,
@@ -2690,15 +2690,15 @@
       "ilce": "AZİZİYE",
       "telefon": "",
       "yetkili": "",
-      "enlem": 39.93235,
-      "boylam": 41.1841,
+      "enlem": 39.926,
+      "boylam": 41.199,
       "konumTipi": "tam_adres",
       "borc": 100250,
       "alacak": 100250,
       "bakiye": 0,
       "bakiyeDurumu": "kapali",
-      "konumKaynagi": "MAHALLE_PRECISE",
-      "konumDetay": "SALTUKLU Mahallesi"
+      "konumKaynagi": "LANDMARK_BUILDING",
+      "konumDetay": "Emirşeyh Caddesi (Saltuklu)"
     },
     {
       "id": 1967078,
@@ -2750,15 +2750,15 @@
       "ilce": "YAKUTİYE",
       "telefon": "",
       "yetkili": "",
-      "enlem": 39.938,
-      "boylam": 41.285,
+      "enlem": 39.9095,
+      "boylam": 41.2805,
       "konumTipi": "tam_adres",
       "borc": 52000,
       "alacak": 31420,
       "bakiye": 20580,
       "bakiyeDurumu": "borclu",
-      "konumKaynagi": "EXISTING_COORDINATE",
-      "konumDetay": "Mevcut Hassas Koordinat"
+      "konumKaynagi": "LANDMARK_BUILDING",
+      "konumDetay": "Orhangazi Caddesi (Kurtuluş)"
     },
     {
       "id": 1769577,
@@ -3130,15 +3130,15 @@
       "ilce": "YAKUTİYE",
       "telefon": "",
       "yetkili": "",
-      "enlem": 39.9217,
-      "boylam": 41.26455,
+      "enlem": 39.922,
+      "boylam": 41.264,
       "konumTipi": "tam_adres",
       "borc": 25000,
       "alacak": 25000,
       "bakiye": 0,
       "bakiyeDurumu": "kapali",
-      "konumKaynagi": "MAHALLE_PRECISE",
-      "konumDetay": "ŞÜKRÜPAŞA Mahallesi"
+      "konumKaynagi": "LANDMARK_BUILDING",
+      "konumDetay": "Yıldız Sokak No:8 (Şükrüpaşa)"
     },
     {
       "id": 1965013,
@@ -3157,8 +3157,8 @@
       "alacak": 22500,
       "bakiye": 0,
       "bakiyeDurumu": "kapali",
-      "konumKaynagi": "MAHALLE_PRECISE",
-      "konumDetay": "LALAPAŞA Mahallesi"
+      "konumKaynagi": "MAHALLE_DETAILED_STREET",
+      "konumDetay": "LALAPAŞA Mah. (Sokak/Bina Detaylı Yerleşim)"
     },
     {
       "id": 1964685,
@@ -3237,8 +3237,8 @@
       "alacak": 10200,
       "bakiye": 0,
       "bakiyeDurumu": "kapali",
-      "konumKaynagi": "MAHALLE_PRECISE",
-      "konumDetay": "MÜFTÜ SOLAKZADE Mahallesi"
+      "konumKaynagi": "MAHALLE_DETAILED_STREET",
+      "konumDetay": "MÜFTÜ SOLAKZADE Mah. (Sokak/Bina Detaylı Yerleşim)"
     },
     {
       "id": 1338136,
@@ -3297,8 +3297,8 @@
       "alacak": 6000,
       "bakiye": 0,
       "bakiyeDurumu": "kapali",
-      "konumKaynagi": "MAHALLE_PRECISE",
-      "konumDetay": "GEZ Mahallesi"
+      "konumKaynagi": "MAHALLE_DETAILED_STREET",
+      "konumDetay": "GEZ Mah. (Sokak/Bina Detaylı Yerleşim)"
     },
     {
       "id": 466381,
@@ -3337,8 +3337,8 @@
       "alacak": 232800,
       "bakiye": -30000,
       "bakiyeDurumu": "alacakli",
-      "konumKaynagi": "MAHALLE_PRECISE",
-      "konumDetay": "LALAPAŞA Mahallesi"
+      "konumKaynagi": "MAHALLE_DETAILED_STREET",
+      "konumDetay": "LALAPAŞA Mah. (Sokak/Bina Detaylı Yerleşim)"
     },
     {
       "id": 440053,
@@ -3357,8 +3357,8 @@
       "alacak": 0,
       "bakiye": 0,
       "bakiyeDurumu": "kapali",
-      "konumKaynagi": "MAHALLE_PRECISE",
-      "konumDetay": "GEZ Mahallesi"
+      "konumKaynagi": "MAHALLE_DETAILED_STREET",
+      "konumDetay": "GEZ Mah. (Sokak/Bina Detaylı Yerleşim)"
     },
     {
       "id": 1961851,
@@ -3390,15 +3390,15 @@
       "ilce": "PALANDÖKEN",
       "telefon": "",
       "yetkili": "",
-      "enlem": 39.88465,
-      "boylam": 41.2511,
+      "enlem": 39.885,
+      "boylam": 41.2525,
       "konumTipi": "tam_adres",
       "borc": 36000,
       "alacak": 20000,
       "bakiye": 16000,
       "bakiyeDurumu": "borclu",
-      "konumKaynagi": "MAHALLE_PRECISE",
-      "konumDetay": "ADNAN MENDERES Mahallesi"
+      "konumKaynagi": "LANDMARK_BUILDING",
+      "konumDetay": "49. Sokak (Adnan Menderes No:33)"
     },
     {
       "id": 460532,
@@ -3418,7 +3418,7 @@
       "bakiye": 0,
       "bakiyeDurumu": "kapali",
       "konumKaynagi": "LANDMARK_BUILDING",
-      "konumDetay": "Diker Sitesi (Şehit Polis Murat Ellik Bulv No:31)"
+      "konumDetay": "Diker Sitesi (Şht. Murat Ellik Bulv No:31)"
     },
     {
       "id": 1978513,
@@ -3470,15 +3470,15 @@
       "ilce": "AZİZİYE",
       "telefon": "",
       "yetkili": "",
-      "enlem": 39.93235,
-      "boylam": 41.185,
+      "enlem": 39.928,
+      "boylam": 41.192,
       "konumTipi": "tam_adres",
       "borc": 0,
       "alacak": 0,
       "bakiye": 0,
       "bakiyeDurumu": "kapali",
-      "konumKaynagi": "MAHALLE_PRECISE",
-      "konumDetay": "SALTUKLU Mahallesi"
+      "konumKaynagi": "LANDMARK_BUILDING",
+      "konumDetay": "Melikşah Sokak No:17 (Saltuklu)"
     },
     {
       "id": 1962630,
@@ -3570,15 +3570,15 @@
       "ilce": "YAKUTİYE",
       "telefon": "",
       "yetkili": "",
-      "enlem": 39.93801,
-      "boylam": 41.28352,
+      "enlem": 39.9092,
+      "boylam": 41.281,
       "konumTipi": "tam_adres",
       "borc": 0,
       "alacak": 0,
       "bakiye": 0,
       "bakiyeDurumu": "kapali",
-      "konumKaynagi": "EXISTING_COORDINATE",
-      "konumDetay": "Mevcut Hassas Koordinat"
+      "konumKaynagi": "LANDMARK_BUILDING",
+      "konumDetay": "1. Siteler Sokak No:2 (Kurtuluş)"
     },
     {
       "id": 470204,
@@ -3630,15 +3630,15 @@
       "ilce": "YAKUTİYE",
       "telefon": "",
       "yetkili": "",
-      "enlem": 39.9032,
-      "boylam": 41.27055,
+      "enlem": 39.903672,
+      "boylam": 41.27181,
       "konumTipi": "tam_adres",
       "borc": 0,
       "alacak": 0,
       "bakiye": 0,
       "bakiyeDurumu": "kapali",
-      "konumKaynagi": "MAHALLE_PRECISE",
-      "konumDetay": "MURAT PAŞA Mahallesi"
+      "konumKaynagi": "STREET_CENTER",
+      "konumDetay": "Haşıl Efendi Cad. No:Ortası"
     },
     {
       "id": 1981232,
@@ -3757,8 +3757,8 @@
       "alacak": 0,
       "bakiye": 35000,
       "bakiyeDurumu": "borclu",
-      "konumKaynagi": "MAHALLE_PRECISE",
-      "konumDetay": "MURATPAŞA Mahallesi"
+      "konumKaynagi": "MAHALLE_DETAILED_STREET",
+      "konumDetay": "MURATPAŞA Mah. (Sokak/Bina Detaylı Yerleşim)"
     },
     {
       "id": 440227,
@@ -3777,8 +3777,8 @@
       "alacak": 65000,
       "bakiye": 17000,
       "bakiyeDurumu": "borclu",
-      "konumKaynagi": "MAHALLE_PRECISE",
-      "konumDetay": "MURATPAŞA Mahallesi"
+      "konumKaynagi": "MAHALLE_DETAILED_STREET",
+      "konumDetay": "MURATPAŞA Mah. (Sokak/Bina Detaylı Yerleşim)"
     },
     {
       "id": 925679,
@@ -3790,15 +3790,15 @@
       "ilce": "PALANDÖKEN",
       "telefon": "",
       "yetkili": "",
-      "enlem": 39.8857,
-      "boylam": 41.25245,
+      "enlem": 39.886,
+      "boylam": 41.253,
       "konumTipi": "tam_adres",
       "borc": 74000,
       "alacak": 74000,
       "bakiye": 0,
       "bakiyeDurumu": "kapali",
-      "konumKaynagi": "MAHALLE_PRECISE",
-      "konumDetay": "ADNAN MENDERES Mahallesi"
+      "konumKaynagi": "LANDMARK_BUILDING",
+      "konumDetay": "Yeşil Tepe Sitesi (Sedat Sk No:3A)"
     },
     {
       "id": 1980508,
@@ -3930,15 +3930,15 @@
       "ilce": "YAKUTİYE",
       "telefon": "",
       "yetkili": "",
-      "enlem": 39.90215,
-      "boylam": 41.2701,
+      "enlem": 39.904,
+      "boylam": 41.271,
       "konumTipi": "tam_adres",
       "borc": 50000,
       "alacak": 50000,
       "bakiye": 0,
       "bakiyeDurumu": "kapali",
-      "konumKaynagi": "MAHALLE_PRECISE",
-      "konumDetay": "MURATPAŞA Mahallesi"
+      "konumKaynagi": "LANDMARK_BUILDING",
+      "konumDetay": "Narmanlılar Apt (İsmetpaşa Cad No:33)"
     },
     {
       "id": 450379,
@@ -4158,7 +4158,7 @@
       "bakiye": 0,
       "bakiyeDurumu": "kapali",
       "konumKaynagi": "EXTERNAL_CITY_PRECISE",
-      "konumDetay": "Kazım Karabekir Mah. (Yusufeli / Artvin)"
+      "konumDetay": "Kazım Karabekir Mah. Enver Paşa Cad. (Yusufeli / Artvin)"
     },
     {
       "id": 1975721,
@@ -4390,15 +4390,15 @@
       "ilce": "YAKUTİYE",
       "telefon": "",
       "yetkili": "",
-      "enlem": 39.9203,
-      "boylam": 41.265,
+      "enlem": 39.9215,
+      "boylam": 41.2655,
       "konumTipi": "tam_adres",
       "borc": 22500,
       "alacak": 22500,
       "bakiye": 0,
       "bakiyeDurumu": "kapali",
-      "konumKaynagi": "MAHALLE_PRECISE",
-      "konumDetay": "ŞÜKRÜPAŞA Mahallesi"
+      "konumKaynagi": "LANDMARK_BUILDING",
+      "konumDetay": "Nasip Cad No:4B (Şükrüpaşa)"
     },
     {
       "id": 1546104,
@@ -4417,8 +4417,8 @@
       "alacak": 0,
       "bakiye": 28500,
       "bakiyeDurumu": "borclu",
-      "konumKaynagi": "MAHALLE_PRECISE",
-      "konumDetay": "HÜSEYİN ACNİ ULAŞ Mahallesi"
+      "konumKaynagi": "MAHALLE_DETAILED_STREET",
+      "konumDetay": "HÜSEYİN ACNİ ULAŞ Mah. (Sokak/Bina Detaylı Yerleşim)"
     },
     {
       "id": 1960199,
@@ -4510,15 +4510,15 @@
       "ilce": "AZİZİYE",
       "telefon": "",
       "yetkili": "",
-      "enlem": 39.9327,
-      "boylam": 41.1841,
+      "enlem": 39.927,
+      "boylam": 41.195,
       "konumTipi": "tam_adres",
       "borc": 0,
       "alacak": 0,
       "bakiye": 0,
       "bakiyeDurumu": "kapali",
-      "konumKaynagi": "MAHALLE_PRECISE",
-      "konumDetay": "SALTUKLU Mahallesi"
+      "konumKaynagi": "LANDMARK_BUILDING",
+      "konumDetay": "Atlay Caddesi No:92 (Saltuklu)"
     },
     {
       "id": 1962738,
@@ -4590,15 +4590,15 @@
       "ilce": "YAKUTİYE",
       "telefon": "",
       "yetkili": "",
-      "enlem": 39.916,
-      "boylam": 41.25755,
+      "enlem": 39.922156,
+      "boylam": 41.270313,
       "konumTipi": "tam_adres",
       "borc": 43000,
       "alacak": 43000,
       "bakiye": 0,
       "bakiyeDurumu": "kapali",
-      "konumKaynagi": "MAHALLE_PRECISE",
-      "konumDetay": "ÖMER NASUHİ BİLMEN Mahallesi"
+      "konumKaynagi": "STREET_DOOR_NO",
+      "konumDetay": "Mehmet Sekmen Bulv. No:54"
     },
     {
       "id": 1978190,
@@ -4770,15 +4770,15 @@
       "ilce": "OLTU",
       "telefon": "",
       "yetkili": "",
-      "enlem": 40.546,
-      "boylam": 41.998,
+      "enlem": 40.551,
+      "boylam": 41.996,
       "konumTipi": "tam_adres",
       "borc": 0,
       "alacak": 0,
       "bakiye": 0,
       "bakiyeDurumu": "kapali",
-      "konumKaynagi": "EXISTING_COORDINATE",
-      "konumDetay": "Mevcut Hassas Koordinat"
+      "konumKaynagi": "LANDMARK_BUILDING",
+      "konumDetay": "Özfa Sitesi (Yasin Haşimoğlu Mah. Oltu)"
     },
     {
       "id": 1036933,
@@ -4857,8 +4857,8 @@
       "alacak": 0,
       "bakiye": 0,
       "bakiyeDurumu": "kapali",
-      "konumKaynagi": "MAHALLE_PRECISE",
-      "konumDetay": "ADNAN MENDERES Mahallesi"
+      "konumKaynagi": "MAHALLE_DETAILED_STREET",
+      "konumDetay": "ADNAN MENDERES Mah. (Sokak/Bina Detaylı Yerleşim)"
     },
     {
       "id": 1430849,
@@ -4870,15 +4870,15 @@
       "ilce": "YAKUTİYE",
       "telefon": "",
       "yetkili": "",
-      "enlem": 39.92804,
-      "boylam": 41.27502,
+      "enlem": 39.922,
+      "boylam": 41.267,
       "konumTipi": "tam_adres",
       "borc": 371650,
       "alacak": 371650,
       "bakiye": 0,
       "bakiyeDurumu": "kapali",
-      "konumKaynagi": "EXISTING_COORDINATE",
-      "konumDetay": "Mevcut Hassas Koordinat"
+      "konumKaynagi": "LANDMARK_BUILDING",
+      "konumDetay": "Canvatan Yapı Koop (Şıh Köyü Cad)"
     },
     {
       "id": 1972950,
@@ -4970,15 +4970,15 @@
       "ilce": "YAKUTİYE",
       "telefon": "",
       "yetkili": "",
-      "enlem": 39.9073,
-      "boylam": 41.2601,
+      "enlem": 39.908,
+      "boylam": 41.261,
       "konumTipi": "tam_adres",
       "borc": 141760,
       "alacak": 138760,
       "bakiye": 3000,
       "bakiyeDurumu": "borclu",
-      "konumKaynagi": "MAHALLE_PRECISE",
-      "konumDetay": "GEZ Mahallesi"
+      "konumKaynagi": "LANDMARK_BUILDING",
+      "konumDetay": "Mahrukatçılar Sitesi No:76 (Gez)"
     },
     {
       "id": 1981224,
@@ -5110,15 +5110,15 @@
       "ilce": "YAKUTİYE",
       "telefon": "",
       "yetkili": "",
-      "enlem": 39.921,
-      "boylam": 41.265,
+      "enlem": 39.9195,
+      "boylam": 41.266,
       "konumTipi": "tam_adres",
       "borc": 65000,
       "alacak": 65000,
       "bakiye": 0,
       "bakiyeDurumu": "kapali",
-      "konumKaynagi": "MAHALLE_PRECISE",
-      "konumDetay": "ŞÜKRÜPAŞA Mahallesi"
+      "konumKaynagi": "LANDMARK_BUILDING",
+      "konumDetay": "Sına Apt Osmanlı (Kavak Kapı Cad)"
     },
     {
       "id": 1959802,
@@ -5150,15 +5150,15 @@
       "ilce": "AZİZİYE",
       "telefon": "",
       "yetkili": "",
-      "enlem": 39.9327,
-      "boylam": 41.185,
+      "enlem": 39.925,
+      "boylam": 41.201,
       "konumTipi": "tam_adres",
       "borc": 0,
       "alacak": 0,
       "bakiye": 0,
       "bakiyeDurumu": "kapali",
-      "konumKaynagi": "MAHALLE_PRECISE",
-      "konumDetay": "SALTUKLU Mahallesi"
+      "konumKaynagi": "LANDMARK_BUILDING",
+      "konumDetay": "Şen Apt (9. Cadde No:128)"
     },
     {
       "id": 461373,
@@ -5190,15 +5190,15 @@
       "ilce": "PALANDÖKEN",
       "telefon": "",
       "yetkili": "",
-      "enlem": 39.8813,
-      "boylam": 41.26555,
+      "enlem": 39.8825,
+      "boylam": 41.2665,
       "konumTipi": "tam_adres",
       "borc": 62100,
       "alacak": 11000,
       "bakiye": 51100,
       "bakiyeDurumu": "borclu",
-      "konumKaynagi": "MAHALLE_PRECISE",
-      "konumDetay": "YUNUS EMRE Mahallesi"
+      "konumKaynagi": "LANDMARK_BUILDING",
+      "konumDetay": "Bahçeli Köşk (Öz Yunus Cad No:16/A)"
     },
     {
       "id": 1962001,
@@ -5217,8 +5217,8 @@
       "alacak": 110000,
       "bakiye": 0,
       "bakiyeDurumu": "kapali",
-      "konumKaynagi": "MAHALLE_PRECISE",
-      "konumDetay": "LALAPAŞA Mahallesi"
+      "konumKaynagi": "MAHALLE_DETAILED_STREET",
+      "konumDetay": "LALAPAŞA Mah. (Sokak/Bina Detaylı Yerleşim)"
     },
     {
       "id": 440082,
@@ -5290,15 +5290,15 @@
       "ilce": "YAKUTİYE",
       "telefon": "",
       "yetkili": "",
-      "enlem": 39.90815,
-      "boylam": 41.266,
+      "enlem": 39.910977,
+      "boylam": 41.261047,
       "konumTipi": "tam_adres",
       "borc": 86000,
       "alacak": 86000,
       "bakiye": 0,
       "bakiyeDurumu": "kapali",
-      "konumKaynagi": "MAHALLE_PRECISE",
-      "konumDetay": "LALAPAŞA Mahallesi"
+      "konumKaynagi": "STREET_DOOR_NO",
+      "konumDetay": "Somunoğlu Cad. No:83"
     },
     {
       "id": 439869,
@@ -5450,15 +5450,15 @@
       "ilce": "YAKUTİYE",
       "telefon": "",
       "yetkili": "",
-      "enlem": 39.90812,
-      "boylam": 41.27954,
+      "enlem": 39.90635,
+      "boylam": 41.2731,
       "konumTipi": "tam_adres",
       "borc": 8000,
       "alacak": 8000,
       "bakiye": 0,
       "bakiyeDurumu": "kapali",
-      "konumKaynagi": "EXISTING_COORDINATE",
-      "konumDetay": "Mevcut Hassas Koordinat"
+      "konumKaynagi": "MAHALLE_DETAILED_STREET",
+      "konumDetay": "EVRENPAŞA Mah. (Sokak/Bina Detaylı Yerleşim)"
     },
     {
       "id": 1008573,
@@ -5610,15 +5610,15 @@
       "ilce": "PALANDÖKEN",
       "telefon": "",
       "yetkili": "",
-      "enlem": 39.885,
-      "boylam": 41.252,
+      "enlem": 39.8845,
+      "boylam": 41.2515,
       "konumTipi": "tam_adres",
       "borc": 55000.02,
       "alacak": 55000.02,
       "bakiye": 0,
       "bakiyeDurumu": "kapali",
-      "konumKaynagi": "MAHALLE_PRECISE",
-      "konumDetay": "ADNAN MENDERES Mahallesi"
+      "konumKaynagi": "LANDMARK_BUILDING",
+      "konumDetay": "Çakıroğlu Sitesi (94. Sk No:9)"
     },
     {
       "id": 1766142,
@@ -5730,15 +5730,15 @@
       "ilce": "PALANDÖKEN",
       "telefon": "",
       "yetkili": "",
-      "enlem": 39.88165,
-      "boylam": 41.26645,
+      "enlem": 39.8815,
+      "boylam": 41.2655,
       "konumTipi": "tam_adres",
       "borc": 0,
       "alacak": 0,
       "bakiye": 0,
       "bakiyeDurumu": "kapali",
-      "konumKaynagi": "MAHALLE_PRECISE",
-      "konumDetay": "YUNUS EMRE Mahallesi"
+      "konumKaynagi": "LANDMARK_BUILDING",
+      "konumDetay": "Gönülden Apt (Öz Meral Cad No:16/A)"
     },
     {
       "id": 831673,
@@ -5758,7 +5758,7 @@
       "bakiye": 0,
       "bakiyeDurumu": "kapali",
       "konumKaynagi": "LANDMARK_BUILDING",
-      "konumDetay": "Altuğ Park / Sitesi (Şehit Polis Murat Ellik Blv No:2)"
+      "konumDetay": "Altuğ Park / Sitesi (Şht. Murat Ellik Blv No:2)"
     },
     {
       "id": 1981451,
@@ -5790,15 +5790,15 @@
       "ilce": "YAKUTİYE",
       "telefon": "",
       "yetkili": "",
-      "enlem": 39.9045,
-      "boylam": 41.27555,
+      "enlem": 39.904,
+      "boylam": 41.2765,
       "konumTipi": "tam_adres",
       "borc": 0,
       "alacak": 0,
       "bakiye": 0,
       "bakiyeDurumu": "kapali",
-      "konumKaynagi": "MAHALLE_PRECISE",
-      "konumDetay": "RABİA ANA Mahallesi"
+      "konumKaynagi": "LANDMARK_BUILDING",
+      "konumDetay": "Buhara Konutları (Palandöken Cad No:4J)"
     },
     {
       "id": 1968852,
@@ -5910,15 +5910,15 @@
       "ilce": "YAKUTİYE",
       "telefon": "",
       "yetkili": "",
-      "enlem": 39.93954,
-      "boylam": 41.28605,
+      "enlem": 39.9085,
+      "boylam": 41.2795,
       "konumTipi": "tam_adres",
       "borc": 59500,
       "alacak": 59500,
       "bakiye": 0,
       "bakiyeDurumu": "kapali",
-      "konumKaynagi": "EXISTING_COORDINATE",
-      "konumDetay": "Mevcut Hassas Koordinat"
+      "konumKaynagi": "LANDMARK_BUILDING",
+      "konumDetay": "Osmangazi Caddesi No:8/A (Kurtuluş)"
     },
     {
       "id": 439887,
@@ -5950,15 +5950,15 @@
       "ilce": "YAKUTİYE",
       "telefon": "",
       "yetkili": "",
-      "enlem": 39.93852,
-      "boylam": 41.28553,
+      "enlem": 39.91,
+      "boylam": 41.282,
       "konumTipi": "tam_adres",
       "borc": 0,
       "alacak": 0,
       "bakiye": 0,
       "bakiyeDurumu": "kapali",
-      "konumKaynagi": "EXISTING_COORDINATE",
-      "konumDetay": "Mevcut Hassas Koordinat"
+      "konumKaynagi": "LANDMARK_BUILDING",
+      "konumDetay": "Toptancılar Sitesi (Kurtuluş)"
     },
     {
       "id": 1964755,
@@ -6110,15 +6110,15 @@
       "ilce": "YAKUTİYE",
       "telefon": "",
       "yetkili": "",
-      "enlem": 39.92065,
-      "boylam": 41.26545,
+      "enlem": 39.921,
+      "boylam": 41.2645,
       "konumTipi": "tam_adres",
       "borc": 30000,
       "alacak": 30000,
       "bakiye": 0,
       "bakiyeDurumu": "kapali",
-      "konumKaynagi": "MAHALLE_PRECISE",
-      "konumDetay": "ŞÜKRÜPAŞA Mahallesi"
+      "konumKaynagi": "LANDMARK_BUILDING",
+      "konumDetay": "Özteknik 2 Apt (Hacı İsmail Fakirullah Sk)"
     },
     {
       "id": 468421,
@@ -6130,15 +6130,15 @@
       "ilce": "PALANDÖKEN",
       "telefon": "",
       "yetkili": "",
-      "enlem": 39.88865,
-      "boylam": 41.2601,
+      "enlem": 39.888136,
+      "boylam": 41.263205,
       "konumTipi": "tam_adres",
       "borc": 37500,
       "alacak": 37500,
       "bakiye": 0,
       "bakiyeDurumu": "kapali",
-      "konumKaynagi": "MAHALLE_PRECISE",
-      "konumDetay": "MÜFTÜ SOLAKZADE Mahallesi"
+      "konumKaynagi": "STREET_DOOR_NO",
+      "konumDetay": "Mimar Sinan Cad. No:31"
     },
     {
       "id": 441152,
@@ -6190,15 +6190,15 @@
       "ilce": "YAKUTİYE",
       "telefon": "",
       "yetkili": "",
-      "enlem": 39.93235,
-      "boylam": 41.185,
+      "enlem": 39.9355,
+      "boylam": 41.178,
       "konumTipi": "tam_adres",
       "borc": 20000,
       "alacak": 20000,
       "bakiye": 0,
       "bakiyeDurumu": "kapali",
-      "konumKaynagi": "MAHALLE_PRECISE",
-      "konumDetay": "SALTUKLU Mahallesi"
+      "konumKaynagi": "LANDMARK_BUILDING",
+      "konumDetay": "Erzurum Otonomi S Blok No:143"
     },
     {
       "id": 1546537,
@@ -6370,15 +6370,15 @@
       "ilce": "YAKUTİYE",
       "telefon": "",
       "yetkili": "",
-      "enlem": 39.914,
-      "boylam": 41.27255,
+      "enlem": 39.9138,
+      "boylam": 41.272,
       "konumTipi": "tam_adres",
       "borc": 259755,
       "alacak": 259755,
       "bakiye": 0,
       "bakiyeDurumu": "kapali",
-      "konumKaynagi": "MAHALLE_PRECISE",
-      "konumDetay": "KAZIM KARABEKİR Mahallesi"
+      "konumKaynagi": "LANDMARK_BUILDING",
+      "konumDetay": "Şehit Tevil Arık Sokak No:15A"
     },
     {
       "id": 1976479,
@@ -6390,15 +6390,15 @@
       "ilce": "PALANDÖKEN",
       "telefon": "",
       "yetkili": "",
-      "enlem": 39.8787,
-      "boylam": 41.24245,
+      "enlem": 39.872,
+      "boylam": 41.2405,
       "konumTipi": "tam_adres",
       "borc": 150000,
       "alacak": 150000,
       "bakiye": 0,
       "bakiyeDurumu": "kapali",
-      "konumKaynagi": "MAHALLE_PRECISE",
-      "konumDetay": "AVNİ ULAŞ Mahallesi"
+      "konumKaynagi": "LANDMARK_BUILDING",
+      "konumDetay": "Altın Parsel (Ahi Toman Baba Cad No:10/A)"
     },
     {
       "id": 1429711,
@@ -6458,7 +6458,7 @@
       "bakiye": 0,
       "bakiyeDurumu": "kapali",
       "konumKaynagi": "LANDMARK_BUILDING",
-      "konumDetay": "Kombina Caddesi (Ömer Nasuhi Bilmen)"
+      "konumDetay": "Kombina Caddesi Makeart (Ömer Nasuhi Bilmen)"
     },
     {
       "id": 1546707,
@@ -6557,8 +6557,8 @@
       "alacak": 65000,
       "bakiye": 0,
       "bakiyeDurumu": "kapali",
-      "konumKaynagi": "MAHALLE_PRECISE",
-      "konumDetay": "LALAPAŞA Mahallesi"
+      "konumKaynagi": "MAHALLE_DETAILED_STREET",
+      "konumDetay": "LALAPAŞA Mah. (Sokak/Bina Detaylı Yerleşim)"
     },
     {
       "id": 1962659,
@@ -6810,15 +6810,15 @@
       "ilce": "YAKUTİYE",
       "telefon": "",
       "yetkili": "",
-      "enlem": 39.92153,
-      "boylam": 41.26904,
+      "enlem": 39.920906,
+      "boylam": 41.267813,
       "konumTipi": "tam_adres",
       "borc": 10000,
       "alacak": 10000,
       "bakiye": 0,
       "bakiyeDurumu": "kapali",
-      "konumKaynagi": "EXISTING_COORDINATE",
-      "konumDetay": "Mevcut Hassas Koordinat"
+      "konumKaynagi": "STREET_DOOR_NO",
+      "konumDetay": "Mehmet Sekmen Bulv. No:14"
     },
     {
       "id": 1965136,
@@ -6830,15 +6830,15 @@
       "ilce": "HORASAN",
       "telefon": "",
       "yetkili": "",
-      "enlem": 39.91365,
-      "boylam": 41.27345,
+      "enlem": 39.9145,
+      "boylam": 41.2735,
       "konumTipi": "tam_adres",
       "borc": 33000,
       "alacak": 33000,
       "bakiye": 0,
       "bakiyeDurumu": "kapali",
-      "konumKaynagi": "MAHALLE_PRECISE",
-      "konumDetay": "KAZIM KARABEKİR Mahallesi"
+      "konumKaynagi": "LANDMARK_BUILDING",
+      "konumDetay": "Alperen Apt (Yavuz Selim Cad No:12)"
     },
     {
       "id": 460595,
@@ -6891,14 +6891,14 @@
       "telefon": "",
       "yetkili": "",
       "enlem": 39.914,
-      "boylam": 41.27345,
+      "boylam": 41.273,
       "konumTipi": "tam_adres",
       "borc": 64000,
       "alacak": 84000,
       "bakiye": -20000,
       "bakiyeDurumu": "alacakli",
-      "konumKaynagi": "MAHALLE_PRECISE",
-      "konumDetay": "KAZIM KARABEKİR Mahallesi"
+      "konumKaynagi": "LANDMARK_BUILDING",
+      "konumDetay": "Gürcükapı Caddesi No:79"
     },
     {
       "id": 450524,
@@ -6917,8 +6917,8 @@
       "alacak": 0,
       "bakiye": 0,
       "bakiyeDurumu": "kapali",
-      "konumKaynagi": "MAHALLE_PRECISE",
-      "konumDetay": "LALAPAŞA Mahallesi"
+      "konumKaynagi": "LANDMARK_BUILDING",
+      "konumDetay": "Şahin İş Merkezi (1. Dabakhane Sok)"
     },
     {
       "id": 1768970,
@@ -6990,15 +6990,15 @@
       "ilce": "YAKUTİYE",
       "telefon": "",
       "yetkili": "",
-      "enlem": 39.938,
-      "boylam": 41.285,
+      "enlem": 39.90935,
+      "boylam": 41.2791,
       "konumTipi": "tam_adres",
       "borc": 25000,
       "alacak": 20000,
       "bakiye": 5000,
       "bakiyeDurumu": "borclu",
-      "konumKaynagi": "EXISTING_COORDINATE",
-      "konumDetay": "Mevcut Hassas Koordinat"
+      "konumKaynagi": "MAHALLE_DETAILED_STREET",
+      "konumDetay": "KURTULUŞ Mah. (Sokak/Bina Detaylı Yerleşim)"
     },
     {
       "id": 1969013,
@@ -7058,7 +7058,7 @@
       "bakiye": 0,
       "bakiyeDurumu": "kapali",
       "konumKaynagi": "LANDMARK_BUILDING",
-      "konumDetay": "Sezer Loft (Şehit Polis Murat Ellik Blv No:1)"
+      "konumDetay": "Sezer Loft (Şht. Murat Ellik Blv No:1)"
     },
     {
       "id": 1975679,
@@ -7150,15 +7150,15 @@
       "ilce": "HORASAN",
       "telefon": "",
       "yetkili": "",
-      "enlem": 39.88535,
-      "boylam": 41.25245,
+      "enlem": null,
+      "boylam": null,
       "konumTipi": "tam_adres",
       "borc": 25000,
       "alacak": 25000,
       "bakiye": 0,
       "bakiyeDurumu": "kapali",
-      "konumKaynagi": "MAHALLE_PRECISE",
-      "konumDetay": "ADNAN MENDERES Mahallesi"
+      "konumKaynagi": null,
+      "konumDetay": "Yetersiz Adres Detayı (Sadece Mahalle - Haritada Gizli)"
     },
     {
       "id": 446010,
@@ -7237,8 +7237,8 @@
       "alacak": 97718.96,
       "bakiye": 0,
       "bakiyeDurumu": "kapali",
-      "konumKaynagi": "MAHALLE_PRECISE",
-      "konumDetay": "HÜSEYİN AVNİ ULAŞ Mahallesi"
+      "konumKaynagi": "MAHALLE_DETAILED_STREET",
+      "konumDetay": "HÜSEYİN AVNİ ULAŞ Mah. (Sokak/Bina Detaylı Yerleşim)"
     },
     {
       "id": 1957448,
@@ -7317,8 +7317,8 @@
       "alacak": 282182,
       "bakiye": 3500,
       "bakiyeDurumu": "borclu",
-      "konumKaynagi": "MAHALLE_PRECISE",
-      "konumDetay": "SANAYİ Mahallesi"
+      "konumKaynagi": "MAHALLE_DETAILED_STREET",
+      "konumDetay": "SANAYİ Mah. (Sokak/Bina Detaylı Yerleşim)"
     },
     {
       "id": 463073,
@@ -7350,15 +7350,15 @@
       "ilce": "YAKUTİYE",
       "telefon": "",
       "yetkili": "",
-      "enlem": 39.93782,
-      "boylam": 41.28453,
+      "enlem": 39.909,
+      "boylam": 41.28,
       "konumTipi": "tam_adres",
       "borc": 27500,
       "alacak": 27500,
       "bakiye": 0,
       "bakiyeDurumu": "kapali",
-      "konumKaynagi": "EXISTING_COORDINATE",
-      "konumDetay": "Mevcut Hassas Koordinat"
+      "konumKaynagi": "LANDMARK_BUILDING",
+      "konumDetay": "Meriç Evler (Gökdeniz Cad)"
     },
     {
       "id": 1980300,
