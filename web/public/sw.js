@@ -1,5 +1,5 @@
-// CariRadar - Yüksek Güvenilirlikli Modern PWA Service Worker (v5)
-const CACHE_NAME = 'cari-radar-v5';
+// CariRadar - Yüksek Güvenilirlikli Modern PWA Service Worker (v6)
+const CACHE_NAME = 'cari-radar-v6';
 
 // Kritik statik dosyalar (çevrimdışı fallback ve ilk açılış hızı için)
 const PRECACHE_ASSETS = [

@@ -127,12 +127,15 @@ export default function App() {
   const insideCarilerRef = useRef(new Set());
   // En son bildirim gönderilme zamanı (Çoklu caride bildirim fırtınasını engelleme)
   const lastNotificationTimeRef = useRef(0);
+  // Uygulama açılışında bulunulan mevcut konumdaki cariler için açılış anında bildirim fırlatılmasını engelleyen kontrol
+  const isInitialFixRef = useRef(true);
 
   const handleResetNotificationHistory = () => {
     clearAllStoredNotifications();
     notifiedCarilerRef.current = {};
     insideCarilerRef.current.clear();
     lastNotificationTimeRef.current = 0;
+    isInitialFixRef.current = false;
     showToast('🔔 Bildirim hafızası sıfırlandı. Seçili alana giren cariler için tekrar bildirim verilecek.');
   };
 
@@ -212,6 +215,33 @@ export default function App() {
     }
   };
 
+  // Ekranı açık tutma (Saha / Sürüş takibi için WakeLock)
+  useEffect(() => {
+    let wakeLockInstance = null;
+    const requestLock = async () => {
+      if ('wakeLock' in navigator && isTracking) {
+        try {
+          wakeLockInstance = await navigator.wakeLock.request('screen');
+        } catch (e) {}
+      }
+    };
+    if (isTracking) {
+      requestLock();
+    }
+    const handleVisibility = () => {
+      if (document.visibilityState === 'visible' && isTracking) {
+        requestLock();
+      }
+    };
+    document.addEventListener('visibilitychange', handleVisibility);
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibility);
+      if (wakeLockInstance) {
+        wakeLockInstance.release().catch(() => {});
+      }
+    };
+  }, [isTracking]);
+
   // 2. GPS Konum Takibi
   useEffect(() => {
     if (isSimulating) return; // Simulasyon aciksa gercek GPS durdurulsun
@@ -231,16 +261,13 @@ export default function App() {
         setIsTracking(true);
       },
       (err) => {
-        console.warn('GPS Hatası:', err.message);
-        // Varsayilan Erzurum Yakutiye konumu (test icin)
-        if (!userLocation) {
-          setUserLocation({ lat: 39.9086, lng: 41.2769 });
-        }
+        console.warn('GPS Sinyali Bekleniyor / Hatası:', err.message);
+        // Kesinlikle sahte koordinat atanmamalıdır; harita varsayılan merkezde durur
       },
       {
         enableHighAccuracy: true,
-        timeout: 15000,
-        maximumAge: 10000,
+        timeout: 20000,
+        maximumAge: 5000,
       }
     );
 
@@ -256,6 +283,21 @@ export default function App() {
     const now = Date.now();
     const notifiedHistory = notifiedCarilerRef.current;
     const insideSet = insideCarilerRef.current;
+
+    // Uygulama ilk açıldığında: Kullanıcının zaten içinde bulunduğu mevcut konumu baz al,
+    // açılış anında ekrana ve bildirim çubuğuna ani bildirim fırlatma!
+    // (Sadece kullanıcı hareket edip YENİ bir carinin alanına girdiğinde bildir)
+    if (isInitialFixRef.current) {
+      isInitialFixRef.current = false;
+      for (const cari of allCariler) {
+        if (!cari.enlem || !cari.boylam) continue;
+        const d = calculateDistance(userLocation.lat, userLocation.lng, cari.enlem, cari.boylam);
+        if (d <= proximityThreshold) {
+          insideSet.add(String(cari.id));
+        }
+      }
+      return;
+    }
 
     // Alana giren ve henüz bu gün/dönem içinde bildirim gitmemiş cariler
     const eligibleCandidates = [];
@@ -411,6 +453,7 @@ export default function App() {
     notifiedCarilerRef.current = clearStoredNotifiedCari(cariIdStr);
     insideCarilerRef.current.delete(cariIdStr);
     lastNotificationTimeRef.current = 0;
+    isInitialFixRef.current = false;
 
     // Varsa açık modalları kapat
     setSelectedCari(null);
@@ -430,6 +473,7 @@ export default function App() {
   const handleSimulateLocation = (lat, lng) => {
     // Haritaya tıklandığında anlık test yapılabilmesi için sıklık koruma sayacını sıfırla
     lastNotificationTimeRef.current = 0;
+    isInitialFixRef.current = false;
     setUserLocation({ lat, lng, accuracy: 5 });
     setIsTracking(true);
   };
