@@ -16,8 +16,62 @@ import {
 // Varsayılan Yaklaşma Eşiği (Metre) - Kullanıcı isteği ile 150m yapıldı
 const DEFAULT_PROXIMITY_THRESHOLD = 150;
 const STORAGE_KEY_PROXIMITY = 'CARIRADAR_PROXIMITY_THRESHOLD';
-// Bildirim bekleme süresi (Aynı cari için 30 dakika)
-const COOLDOWN_MS = 30 * 60 * 1000;
+const STORAGE_KEY_NOTIFIED = 'CARIRADAR_NOTIFIED_CARIS';
+
+// Bildirim kuralları:
+// 1. Aynı cari için bildirim süresi (24 saat - Kullanıcı alana girdiğinde cari başına 1 kez bildirim)
+const NOTIFICATION_COOLDOWN_MS = 24 * 60 * 60 * 1000;
+// 2. Ardı ardına gelen bildirimler arası minimum nefes alma süresi (aynı anda birden çok cari varsa fırtına engelleme)
+const MIN_NOTIFICATION_INTERVAL_MS = 15 * 1000; // 15 saniye
+// 3. GPS Histerezis Payı (Sınırda titreşimi engelleme: Alandan çıkış için eşik + tampon)
+const GEOFENCE_HYSTERESIS_BUFFER = 30; // 30 metre
+
+// LocalStorage yardımcı fonksiyonları
+const getStoredNotifiedCariler = () => {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY_NOTIFIED);
+    if (!raw) return {};
+    const parsed = JSON.parse(raw);
+    const now = Date.now();
+    const valid = {};
+    for (const [id, ts] of Object.entries(parsed)) {
+      if (now - ts < NOTIFICATION_COOLDOWN_MS) {
+        valid[String(id)] = ts;
+      }
+    }
+    return valid;
+  } catch (e) {
+    return {};
+  }
+};
+
+const persistNotifiedCari = (cariId) => {
+  try {
+    const current = getStoredNotifiedCariler();
+    current[String(cariId)] = Date.now();
+    localStorage.setItem(STORAGE_KEY_NOTIFIED, JSON.stringify(current));
+    return current;
+  } catch (e) {
+    return {};
+  }
+};
+
+const clearStoredNotifiedCari = (cariId) => {
+  try {
+    const current = getStoredNotifiedCariler();
+    delete current[String(cariId)];
+    localStorage.setItem(STORAGE_KEY_NOTIFIED, JSON.stringify(current));
+    return current;
+  } catch (e) {
+    return {};
+  }
+};
+
+const clearAllStoredNotifications = () => {
+  try {
+    localStorage.removeItem(STORAGE_KEY_NOTIFIED);
+  } catch (e) {}
+};
 
 export default function App() {
   const [allCariler, setAllCariler] = useState(() => initialCarilerData?.cariler || []);
@@ -27,6 +81,15 @@ export default function App() {
   const [selectedCari, setSelectedCari] = useState(null);
   const [activeProximityAlert, setActiveProximityAlert] = useState(null);
   const [hasNotificationPermission, setHasNotificationPermission] = useState(false);
+  const [toastMessage, setToastMessage] = useState(null);
+
+  const showToast = (msg) => {
+    setToastMessage(msg);
+    setTimeout(() => {
+      setToastMessage(null);
+    }, 3200);
+  };
+
   const [proximityThreshold, setProximityThreshold] = useState(() => {
     try {
       const saved = localStorage.getItem(STORAGE_KEY_PROXIMITY);
@@ -43,6 +106,7 @@ export default function App() {
     try {
       localStorage.setItem(STORAGE_KEY_PROXIMITY, String(val));
     } catch (e) {}
+    showToast(`📍 Yakınlık alanı ${val} metre olarak güncellendi.`);
   };
 
   // Arama & Filtreleme Durumu
@@ -57,8 +121,20 @@ export default function App() {
   const [deferredPrompt, setDeferredPrompt] = useState(null);
   const [isInstallModalOpen, setIsInstallModalOpen] = useState(false);
 
-  // Bildirim geçmişi (CariId -> Son bildirim zamanı)
-  const notificationCooldowns = useRef({});
+  // Bildirim geçmişi (CariId -> Son bildirim zamanı) - LocalStorage kalıcı hafıza
+  const notifiedCarilerRef = useRef(getStoredNotifiedCariler());
+  // Halihazırda seçili alanın içinde olan carilerin ID kümesi (Alana giriş/çıkış takibi)
+  const insideCarilerRef = useRef(new Set());
+  // En son bildirim gönderilme zamanı (Çoklu caride bildirim fırtınasını engelleme)
+  const lastNotificationTimeRef = useRef(0);
+
+  const handleResetNotificationHistory = () => {
+    clearAllStoredNotifications();
+    notifiedCarilerRef.current = {};
+    insideCarilerRef.current.clear();
+    lastNotificationTimeRef.current = 0;
+    showToast('🔔 Bildirim hafızası sıfırlandı. Seçili alana giren cariler için tekrar bildirim verilecek.');
+  };
 
   // 1. Verileri Çek
   const loadData = async () => {
@@ -173,11 +249,16 @@ export default function App() {
     };
   }, [isSimulating]);
 
-  // 3. 200 Metre Geofencing & Yakınlık Bildirimi
+  // 3. Kullanıcının Seçtiği Alana Göre Geofencing & TEK SEFERLİK Yakınlık Bildirimi
   useEffect(() => {
     if (!userLocation || allCariler.length === 0) return;
 
     const now = Date.now();
+    const notifiedHistory = notifiedCarilerRef.current;
+    const insideSet = insideCarilerRef.current;
+
+    // Alana giren ve henüz bu gün/dönem içinde bildirim gitmemiş cariler
+    const eligibleCandidates = [];
 
     for (const cari of allCariler) {
       if (!cari.enlem || !cari.boylam) continue;
@@ -189,31 +270,60 @@ export default function App() {
         cari.boylam
       );
 
-      // Dinamik Yaklaşma Eşiği (Varsayılan 100 metre)
+      const cariIdStr = String(cari.id);
+      const isCurrentlyInside = insideSet.has(cariIdStr);
+
+      // Kullanıcının seçtiği yarıçap alanı sınırına girildi mi? (dist <= proximityThreshold)
       if (dist <= proximityThreshold) {
-        const lastNotified = notificationCooldowns.current[cari.id];
-        
-        // Spam engelleme: Son 30 dakika icinde bildirim gitmediyse
-        if (!lastNotified || now - lastNotified > COOLDOWN_MS) {
-          notificationCooldowns.current[cari.id] = now;
+        if (!isCurrentlyInside) {
+          // Bu alana yeni giriş yaptı
+          insideSet.add(cariIdStr);
+        }
 
-          console.log(`[Geofence] ${proximityThreshold}m içi cari algılandı: ${cari.ad} (${Math.round(dist)}m)`);
+        // Daha önce bu cari için bildirim gönderildi mi kontrol et (24 saatlik kalıcı hafıza)
+        const lastNotifiedAt = notifiedHistory[cariIdStr];
+        const isAlreadyNotified = lastNotifiedAt && (now - lastNotifiedAt < NOTIFICATION_COOLDOWN_MS);
 
-          // 1. OneSignal / Web Push Bildirimi Gönder
-          sendProximityPushNotification(cari, dist);
-
-          // 2. Uygulama İçi İnteraktif Alert Modalı Aç (Evet/Hayır Butonlu)
-          setActiveProximityAlert({
-            cari: cari,
-            distance: dist,
-          });
-
-          // Ayni anda birden fazla alert cikmamasi icin ilk caride dur
-          break;
+        if (!isAlreadyNotified) {
+          eligibleCandidates.push({ cari, dist });
+        }
+      } else if (dist > proximityThreshold + GEOFENCE_HYSTERESIS_BUFFER) {
+        // Kullanıcı carinin etrafındaki alandan çıktı (Histerezis tamponu ile GPS titreşimleri elenir)
+        if (isCurrentlyInside) {
+          insideSet.delete(cariIdStr);
         }
       }
     }
-  }, [userLocation, allCariler]);
+
+    // Halihazırda ekranda açık bir bildirim modalı varsa kullanıcı yanıtlamadan yenisini açma
+    if (activeProximityAlert) return;
+
+    // Bildirim sıklık koruması (Aynı bölgede birden fazla cari varsa sırayla en az 15 sn arayla bildir)
+    if (now - lastNotificationTimeRef.current < MIN_NOTIFICATION_INTERVAL_MS) return;
+
+    // Bildirime uygun cariler varsa EN YAKIN olanı seç ve SADECE 1 KEZ bildir
+    if (eligibleCandidates.length > 0) {
+      // Mesafeye göre en yakından uzağa sırala
+      eligibleCandidates.sort((a, b) => a.dist - b.dist);
+      const chosen = eligibleCandidates[0];
+      const chosenIdStr = String(chosen.cari.id);
+
+      // Kalıcı hafızaya ve ref'e kaydet (Tekrar bildirim gitmeyecek)
+      notifiedCarilerRef.current = persistNotifiedCari(chosenIdStr);
+      lastNotificationTimeRef.current = now;
+
+      console.log(`[Geofence] ${proximityThreshold}m alanına giren cari için TEK SEFERLİK bildirim: ${chosen.cari.ad} (${Math.round(chosen.dist)}m)`);
+
+      // 1. OneSignal / Web Push Bildirimi Gönder
+      sendProximityPushNotification(chosen.cari, chosen.dist);
+
+      // 2. Uygulama İçi İnteraktif Alert Modalı Aç (Evet/Hayır Butonlu)
+      setActiveProximityAlert({
+        cari: chosen.cari,
+        distance: chosen.dist,
+      });
+    }
+  }, [userLocation, allCariler, proximityThreshold, activeProximityAlert]);
 
   // Carileri mesafeye ve filtrelere gore hesapla
   const processedCariler = useMemo(() => {
@@ -288,19 +398,23 @@ export default function App() {
     }
   };
 
-  // Belirli bir cari için 200m yaklaşma testini tetikle
+  // Belirli bir cari için yaklaşma testini tetikle
   const handleTestProximityForCari = (cari) => {
     if (!cari || !cari.enlem || !cari.boylam) return;
 
-    // Kullanıcıyı bu carinin 20 metre yanına taşı (50m içine girsin)
+    // Kullanıcıyı bu carinin yanına taşı
     const testLat = cari.enlem + 0.00015;
     const testLng = cari.boylam + 0.00015;
 
-    // Cooldown'u sıfırla ki bildirim anında tetiklensin
-    delete notificationCooldowns.current[cari.id];
+    const cariIdStr = String(cari.id);
+    // Test amaçlı olduğu için bu cariyi hafızadan temizle ki anında bildirim çıksın
+    notifiedCarilerRef.current = clearStoredNotifiedCari(cariIdStr);
+    insideCarilerRef.current.delete(cariIdStr);
+    lastNotificationTimeRef.current = 0;
 
-    // Varsa açık detay modalını kapat
+    // Varsa açık modalları kapat
     setSelectedCari(null);
+    setActiveProximityAlert(null);
 
     // Konumu güncelle
     setUserLocation({ lat: testLat, lng: testLng, accuracy: 5 });
@@ -314,8 +428,8 @@ export default function App() {
 
   // Sanal GPS Belirleme (Test Modu)
   const handleSimulateLocation = (lat, lng) => {
-    // Haritaya tıklandığında cooldown'ları temizle ki yakındaki cari anında bildirim versin
-    notificationCooldowns.current = {};
+    // Haritaya tıklandığında anlık test yapılabilmesi için sıklık koruma sayacını sıfırla
+    lastNotificationTimeRef.current = 0;
     setUserLocation({ lat, lng, accuracy: 5 });
     setIsTracking(true);
   };
@@ -333,7 +447,15 @@ export default function App() {
         onInstallPWA={handleInstallPWA}
         proximityThreshold={proximityThreshold}
         setProximityThreshold={handleUpdateProximity}
+        onResetNotifications={handleResetNotificationHistory}
       />
+
+      {/* Toast Bilgilendirme */}
+      {toastMessage && (
+        <div className="fixed top-16 left-1/2 -translate-x-1/2 z-[3000] px-4 py-2 rounded-2xl bg-slate-900/95 border border-blue-500/80 text-blue-200 text-xs font-semibold shadow-xl shadow-blue-500/20 backdrop-blur-md animate-fade-in flex items-center gap-2 max-w-[90vw] text-center">
+          <span>{toastMessage}</span>
+        </div>
+      )}
 
       {/* Ana Harita Alanı */}
       <main className="flex-1 w-full h-full pt-14 pb-20 relative">

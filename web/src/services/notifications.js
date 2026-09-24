@@ -85,7 +85,7 @@ export async function sendProximityPushNotification(cari, distance) {
           icon: '/icons/icon-192.png',
           badge: '/icons/icon-192.png',
           tag: `cari-${cari.id}`,
-          renotify: true,
+          renotify: false, // Halihazırda bu bildirim ekrandaysa tekrar tekrar ses/titreşim üretmesini engelle
           vibrate: [200, 100, 200],
           data: {
             cariId: cari.id,

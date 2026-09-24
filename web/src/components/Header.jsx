@@ -10,7 +10,8 @@ export default function Header({
   deferredPrompt,
   onInstallPWA,
   proximityThreshold,
-  setProximityThreshold
+  setProximityThreshold,
+  onResetNotifications
 }) {
   return (
     <header className="fixed top-0 left-0 right-0 z-[1000] bg-slate-900/90 border-b border-slate-800 backdrop-blur-md px-4 py-2.5 flex items-center justify-between shadow-lg">
@@ -42,14 +43,14 @@ export default function Header({
           value={proximityThreshold}
           onChange={(e) => setProximityThreshold(Number(e.target.value))}
           className="bg-slate-800 hover:bg-slate-750 border border-slate-700 text-blue-400 text-xs font-bold rounded-xl px-2 py-1.5 outline-none cursor-pointer focus:border-blue-500 transition-colors shadow-sm"
-          title="Yakınlık Algılama Mesafesi"
+          title="Yakınlık Algılama Alanı (Seçilen alana giren cari için 1 kez bildirim verilir)"
         >
-          <option value={50}>50m</option>
-          <option value={100}>100m</option>
-          <option value={150}>150m (Varsayılan)</option>
-          <option value={200}>200m</option>
-          <option value={300}>300m</option>
-          <option value={500}>500m</option>
+          <option value={50}>50m Alan</option>
+          <option value={100}>100m Alan</option>
+          <option value={150}>150m Alan (Varsayılan)</option>
+          <option value={200}>200m Alan</option>
+          <option value={300}>300m Alan</option>
+          <option value={500}>500m Alan</option>
         </select>
         {/* PWA Yukle / Ana Ekrana Ekle Butonu */}
         {(typeof window !== 'undefined' && !window.matchMedia('(display-mode: standalone)').matches && !window.navigator.standalone) && (
@@ -76,9 +77,13 @@ export default function Header({
         )}
 
         {hasNotificationPermission && (
-          <div className="p-2 rounded-xl text-emerald-400 bg-emerald-500/10 border border-emerald-500/30" title="Bildirimler Aktif">
+          <button
+            onClick={onResetNotifications}
+            className="p-2 rounded-xl text-emerald-400 bg-emerald-500/10 hover:bg-emerald-500/20 active:scale-95 border border-emerald-500/30 transition-all cursor-pointer"
+            title="Bildirimler Aktif (1 cariye 1 bildirim kuralı). Bildirim geçmişini sıfırlamak için tıklayın."
+          >
             <Bell size={16} />
-          </div>
+          </button>
         )}
 
         {/* Veri Yenileme Butonu */}
