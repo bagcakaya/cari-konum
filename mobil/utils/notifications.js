@@ -74,9 +74,10 @@ export const SafeNotifications = {
           ? ` (Bakiye: ${Math.abs(cari.bakiye).toLocaleString('tr-TR')} ₺ ${cari.bakiye > 0 ? 'Borç' : 'Alacak'})`
           : '';
 
+        const distStr = distance !== undefined && distance !== null ? `${Math.round(distance)}m ` : '';
         await Notifications.scheduleNotificationAsync({
           content: {
-            title: `🚨 ${Math.round(distance || 150)}m Yakınında Cari Bulundu!`,
+            title: `📍 ${distStr}Yakınında: ${cari?.ad || 'Cari'}`,
             body: `${cari?.ad || 'Firma'}${bakiyeStr}\n${cari?.adresTemiz || cari?.ilce || ''}`,
             data: { cariId: cari?.id },
             sound: 'default',
@@ -91,7 +92,7 @@ export const SafeNotifications = {
       }
     }
 
-    console.log(`[Alarm] Yakınlık uyarısı: ${cari?.ad} (${Math.round(distance || 150)}m)`);
+    console.log(`[Alarm] Yakınlık uyarısı: ${cari?.ad} (${Math.round(distance || 0)}m)`);
   },
 
   setNotificationHandler: () => {},

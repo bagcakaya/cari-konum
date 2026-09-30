@@ -24,11 +24,43 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const GEOFENCE_TASK_NAME = 'CARI_RADAR_GEOFENCE_TASK';
 const BACKGROUND_LOCATION_TASK = 'CARI_RADAR_LOCATION_TASK';
-const DEFAULT_PROXIMITY = 150; // 150 metre varsayılan
+const DEFAULT_PROXIMITY = 50; // Kullanıcı seçimine göre dinamik (Varsayılan 50m)
 const STORAGE_KEY_PROXIMITY = '@cari_radar_proximity_threshold';
-const COOLDOWN_MS = 15 * 60 * 1000; // 15 dakika
+const STORAGE_KEY_NOTIFIED = '@cari_radar_notified_caris';
+const NOTIFICATION_COOLDOWN_MS = 24 * 60 * 60 * 1000; // 24 saat tek bildirim kuralı
+const MIN_NOTIFICATION_INTERVAL_MS = 15 * 1000; // 15 saniye fırtına koruması
+const GEOFENCE_HYSTERESIS_BUFFER = 20; // 20 metre histerezis tamponu
 
-const backgroundCooldowns = {};
+// Ortak bellek ve kalıcı hafıza yöneticisi
+let memoryNotifiedCariler = {};
+let currentRadarThreshold = DEFAULT_PROXIMITY;
+
+const loadNotifiedCarilerFromStorage = async () => {
+  try {
+    const raw = await AsyncStorage.getItem(STORAGE_KEY_NOTIFIED);
+    if (!raw) return {};
+    const parsed = JSON.parse(raw);
+    const now = Date.now();
+    const valid = {};
+    for (const [id, ts] of Object.entries(parsed)) {
+      if (now - ts < NOTIFICATION_COOLDOWN_MS) {
+        valid[String(id)] = ts;
+      }
+    }
+    memoryNotifiedCariler = valid;
+    return valid;
+  } catch (e) {
+    return {};
+  }
+};
+
+const recordCariNotified = async (cariId) => {
+  try {
+    const now = Date.now();
+    memoryNotifiedCariler[String(cariId)] = now;
+    await AsyncStorage.setItem(STORAGE_KEY_NOTIFIED, JSON.stringify(memoryNotifiedCariler));
+  } catch (e) {}
+};
 
 // Bildirim Ayarları (Expo Go korumalı)
 try {
@@ -37,7 +69,7 @@ try {
   console.warn('[Notification] Handler başlatılamadı:', e);
 }
 
-// 1. Arka Plan Kesintisiz Radar Görevi (Foreground Service - 371 carinin TAMAMI taranır)
+// 1. Arka Plan Kesintisiz Yüksek Hassasiyetli GPS Görevi (Seçili menzile göre KESİN filtreleme)
 try {
   TaskManager.defineTask(BACKGROUND_LOCATION_TASK, async ({ data, error }) => {
     if (error || !data || !data.locations || !data.locations.length) return;
@@ -47,53 +79,49 @@ try {
     const list = localCariler?.cariler || [];
     const now = Date.now();
 
-    let threshold = DEFAULT_PROXIMITY;
+    // Kullanıcının seçtiği en güncel menzili al (50m, 100m vb.)
+    let threshold = currentRadarThreshold;
     try {
       const saved = await AsyncStorage.getItem(STORAGE_KEY_PROXIMITY);
       if (saved) {
         const parsed = parseInt(saved, 10);
-        if (!isNaN(parsed) && parsed > 0) threshold = parsed;
+        if (!isNaN(parsed) && parsed > 0) {
+          threshold = parsed;
+          currentRadarThreshold = parsed;
+        }
       }
     } catch (_) {}
 
+    if (Object.keys(memoryNotifiedCariler).length === 0) {
+      await loadNotifiedCarilerFromStorage();
+    }
+
+    const eligible = [];
     for (const cari of list) {
       if (!cari.enlem || !cari.boylam) continue;
       const dist = calculateDistance(latitude, longitude, cari.enlem, cari.boylam);
 
+      // KESİNLİKLE kullanıcının seçtiği menzil içinde olmalıdır (Örn: 50m seçiliyse sadece <=50m)
       if (dist <= threshold) {
-        const last = backgroundCooldowns[cari.id];
-        if (!last || now - last > COOLDOWN_MS) {
-          backgroundCooldowns[cari.id] = now;
-          console.log(`[Arka Plan Radar] ${cari.ad} carisine yaklaşıldı (${Math.round(dist)}m)`);
-          await SafeNotifications.triggerProximityAlert(cari, dist);
-          break;
+        const lastNotified = memoryNotifiedCariler[String(cari.id)];
+        if (!lastNotified || now - lastNotified > NOTIFICATION_COOLDOWN_MS) {
+          eligible.push({ cari, dist });
         }
       }
+    }
+
+    if (eligible.length > 0) {
+      // En yakındakine tek seferlik bildirim ver
+      eligible.sort((a, b) => a.dist - b.dist);
+      const chosen = eligible[0];
+
+      await recordCariNotified(chosen.cari.id);
+      console.log(`[Arka Plan Radar] ${threshold}m menzilindeki cariye TEK bildirim: ${chosen.cari.ad} (${Math.round(chosen.dist)}m)`);
+      await SafeNotifications.triggerProximityAlert(chosen.cari, chosen.dist);
     }
   });
 } catch (e) {
   console.warn('[LocationTask] Tanımlama hatası:', e);
-}
-
-// 2. Donanımsal Geofence Görevi (Yedek tetikleyici)
-try {
-  TaskManager.defineTask(GEOFENCE_TASK_NAME, ({ data: { eventType, region }, error }) => {
-    if (error) {
-      console.warn('[Geofence] Arka plan hatası:', error.message);
-      return;
-    }
-    if (eventType === Location.GeofencingEventType.Enter) {
-      console.log('[Geofence] Bölgeye girildi:', region.identifier);
-      try {
-        const foundCari = (localCariler?.cariler || []).find((c) => String(c.id) === String(region.identifier)) || { id: region.identifier };
-        SafeNotifications.triggerProximityAlert(foundCari, region.radius || DEFAULT_PROXIMITY);
-      } catch (err) {
-        console.warn('Geofence bildirim hatası:', err.message);
-      }
-    }
-  });
-} catch (e) {
-  console.warn('[Geofence] Task tanımlama hatası:', e);
 }
 
 export default function App() {
@@ -107,22 +135,26 @@ export default function App() {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [isSimulating, setIsSimulating] = useState(false);
 
-  const notificationCooldowns = useRef({});
   const locationSubRef = useRef(null);
   const allCarilerRef = useRef(allCariler);
+  const insideCarilerRef = useRef(new Set());
+  const isInitialFixRef = useRef(true);
+  const lastNotificationTimeRef = useRef(0);
 
   useEffect(() => {
     allCarilerRef.current = allCariler;
   }, [allCariler]);
 
-  // Hafızadan son seçilen metreyi yükle (Varsayılan 150m)
+  // Hafızadan son seçilen metreyi ve bildirim geçmişini yükle
   useEffect(() => {
+    loadNotifiedCarilerFromStorage();
     AsyncStorage.getItem(STORAGE_KEY_PROXIMITY)
       .then((saved) => {
         if (saved) {
           const val = parseInt(saved, 10);
           if (!isNaN(val) && val > 0) {
             setProximityThreshold(val);
+            currentRadarThreshold = val;
           }
         }
       })
@@ -131,6 +163,7 @@ export default function App() {
 
   const handleUpdateProximity = (newVal) => {
     setProximityThreshold(newVal);
+    currentRadarThreshold = newVal;
     AsyncStorage.setItem(STORAGE_KEY_PROXIMITY, String(newVal)).catch((e) =>
       console.log('[Storage] Proximity yazma hatası:', e)
     );
@@ -156,7 +189,7 @@ export default function App() {
     }
   };
 
-  // 2. Kesintisiz Arka Plan Radarı (Foreground Service + Geofencing)
+  // 2. Kesintisiz Arka Plan Radarı (Yüksek Hassasiyetli Foreground Service)
   const startBackgroundTracking = async (carilerList, radius) => {
     try {
       const isExpoGo = Constants?.appOwnership === 'expo' || Constants?.executionEnvironment === 'storeClient';
@@ -165,42 +198,34 @@ export default function App() {
         return;
       }
 
-      // A. Kesintisiz Ön Plan Servisi (Samsung'un asla kill edemeyeceği servis)
+      // Eski donanımsal geofence görevini durdur (küçük metrajları desteklemez ve yanlış 150m alarmı üretir)
+      try {
+        const hasGeofence = await Location.hasStartedGeofencingAsync(GEOFENCE_TASK_NAME);
+        if (hasGeofence) {
+          await Location.stopGeofencingAsync(GEOFENCE_TASK_NAME);
+          console.log('[Geofence] Donanımsal geofence durduruldu; hassas GPS devrede.');
+        }
+      } catch (_) {}
+
+      // A. Kesintisiz Ön Plan Servisi (Seçilen menzile göre güncellenir)
       const hasStartedLocation = await Location.hasStartedLocationUpdatesAsync(BACKGROUND_LOCATION_TASK);
-      if (!hasStartedLocation) {
-        await Location.startLocationUpdatesAsync(BACKGROUND_LOCATION_TASK, {
-          accuracy: Location.Accuracy.High,
-          distanceInterval: 10, // Her 10 metrede bir tüm carileri tara
-          deferredUpdatesInterval: 5000,
-          showsBackgroundLocationIndicator: true,
-          foregroundService: {
-            notificationTitle: 'CariRadar Devrede',
-            notificationBody: `Saha radarı ${radius || DEFAULT_PROXIMITY}m mesafeyi tarıyor...`,
-            notificationColor: '#10b981',
-          },
-        });
-        console.log('[Radar] Foreground Service kesintisiz radarı başlatıldı.');
+      if (hasStartedLocation) {
+        await Location.stopLocationUpdatesAsync(BACKGROUND_LOCATION_TASK);
       }
 
-      // B. Donanımsal Geofencing (100 adetlik donanım desteği)
-      const hasStartedGeofence = await Location.hasStartedGeofencingAsync(GEOFENCE_TASK_NAME);
-      if (hasStartedGeofence) {
-        await Location.stopGeofencingAsync(GEOFENCE_TASK_NAME);
-      }
-
-      const validList = carilerList.filter((c) => c.enlem && c.boylam).slice(0, 100);
-      if (validList.length > 0) {
-        const regions = validList.map((c) => ({
-          identifier: String(c.id),
-          latitude: c.enlem,
-          longitude: c.boylam,
-          radius: radius || DEFAULT_PROXIMITY,
-          notifyOnEnter: true,
-          notifyOnExit: false,
-        }));
-        await Location.startGeofencingAsync(GEOFENCE_TASK_NAME, regions);
-        console.log(`[Geofence] ${regions.length} adet cari donanım radarına kaydedildi.`);
-      }
+      const activeRadius = radius || currentRadarThreshold || DEFAULT_PROXIMITY;
+      await Location.startLocationUpdatesAsync(BACKGROUND_LOCATION_TASK, {
+        accuracy: Location.Accuracy.High,
+        distanceInterval: 5, // Her 5 metrede bir konumu doğrula
+        deferredUpdatesInterval: 3000,
+        showsBackgroundLocationIndicator: true,
+        foregroundService: {
+          notificationTitle: 'CariRadar Devrede',
+          notificationBody: `Saha radarı ${activeRadius}m menzili tarıyor...`,
+          notificationColor: '#2563eb',
+        },
+      });
+      console.log(`[Radar] Foreground Service ${activeRadius}m menziliyle başlatıldı.`);
     } catch (e) {
       console.warn('Arka plan takibi başlatılamadı:', e.message);
     }
@@ -244,8 +269,8 @@ export default function App() {
       const sub = await Location.watchPositionAsync(
         {
           accuracy: Location.Accuracy.High,
-          distanceInterval: 5,
-          timeInterval: 3000,
+          distanceInterval: 3,
+          timeInterval: 2000,
         },
         (loc) => {
           if (!isSimulating) {
@@ -284,11 +309,27 @@ export default function App() {
     };
   }, []);
 
-  // 4. Ön Plan 50m Yakınlık Kontrolü
+  // 4. Ön Plan Seçilen Menzil Yakınlık Kontrolü (SADECE SEÇİLEN MENZİL VE TEK BİLDİRİM)
   useEffect(() => {
     if (!userLocation || allCariler.length === 0) return;
 
     const now = Date.now();
+    const insideSet = insideCarilerRef.current;
+
+    // Uygulama ilk açıldığında bulunulan yerdeki carileri baz al (açılışta bildirim fırlatmasını önle)
+    if (isInitialFixRef.current) {
+      isInitialFixRef.current = false;
+      for (const cari of allCariler) {
+        if (!cari.enlem || !cari.boylam) continue;
+        const d = calculateDistance(userLocation.latitude, userLocation.longitude, cari.enlem, cari.boylam);
+        if (d <= proximityThreshold) {
+          insideSet.add(String(cari.id));
+        }
+      }
+      return;
+    }
+
+    const eligible = [];
     for (const cari of allCariler) {
       if (!cari.enlem || !cari.boylam) continue;
 
@@ -299,25 +340,48 @@ export default function App() {
         cari.boylam
       );
 
+      const cariIdStr = String(cari.id);
+      const isInside = insideSet.has(cariIdStr);
+
+      // KESİNLİKLE kullanıcının seçtiği menzil içinde mi? (Örn: 50m seçiliyse sadece <=50m)
       if (dist <= proximityThreshold) {
-        const last = notificationCooldowns.current[cari.id];
-        if (!last || now - last > COOLDOWN_MS) {
-          notificationCooldowns.current[cari.id] = now;
+        if (!isInside) {
+          insideSet.add(cariIdStr);
+        }
 
-          // Donanımsal Titreşim ve Yakınlık Uyarısı
-          try {
-            SafeNotifications.triggerProximityAlert(cari, dist);
-          } catch (e) {
-            console.warn('Bildirim hatası:', e.message);
-          }
+        const lastNotified = memoryNotifiedCariler[cariIdStr];
+        const isAlreadyNotified = lastNotified && (now - lastNotified < NOTIFICATION_COOLDOWN_MS);
 
-          // Uygulama içi modal
-          setActiveProximityAlert({ cari, distance: dist });
-          break;
+        if (!isAlreadyNotified) {
+          eligible.push({ cari, dist });
+        }
+      } else if (dist > proximityThreshold + GEOFENCE_HYSTERESIS_BUFFER) {
+        if (isInside) {
+          insideSet.delete(cariIdStr);
         }
       }
     }
-  }, [userLocation, allCariler, proximityThreshold]);
+
+    if (activeProximityAlert) return;
+    if (now - lastNotificationTimeRef.current < MIN_NOTIFICATION_INTERVAL_MS) return;
+
+    if (eligible.length > 0) {
+      eligible.sort((a, b) => a.dist - b.dist);
+      const chosen = eligible[0];
+      const chosenIdStr = String(chosen.cari.id);
+
+      recordCariNotified(chosenIdStr);
+      lastNotificationTimeRef.current = now;
+
+      console.log(`[Ön Plan Radar] ${proximityThreshold}m menzili içindeki cariye TEK SEFERLİK bildirim: ${chosen.cari.ad} (${Math.round(chosen.dist)}m)`);
+
+      // Donanımsal Titreşim ve Yakınlık Uyarısı
+      SafeNotifications.triggerProximityAlert(chosen.cari, chosen.dist);
+
+      // Uygulama içi modal
+      setActiveProximityAlert({ cari: chosen.cari, distance: chosen.dist });
+    }
+  }, [userLocation, allCariler, proximityThreshold, activeProximityAlert]);
 
   // Carileri mesafeye göre hesapla
   const processedCariler = useMemo(() => {
@@ -335,7 +399,7 @@ export default function App() {
     });
   }, [allCariler, userLocation]);
 
-  // 50m Test Simülasyonu
+  // Test Simülasyonu
   const handleTestProximityForCari = (cari) => {
     if (!cari || !cari.enlem || !cari.boylam) return;
 
@@ -343,15 +407,22 @@ export default function App() {
     const testLat = cari.enlem + 0.00015;
     const testLng = cari.boylam + 0.00015;
 
-    delete notificationCooldowns.current[cari.id];
+    const cariIdStr = String(cari.id);
+    delete memoryNotifiedCariler[cariIdStr];
+    insideCarilerRef.current.delete(cariIdStr);
+    lastNotificationTimeRef.current = 0;
+    isInitialFixRef.current = false;
+
     setSelectedCari(null);
+    setActiveProximityAlert(null);
 
     setUserLocation({ latitude: testLat, longitude: testLng });
     setIsTracking(true);
   };
 
   const handleSimulateLocation = (lat, lng) => {
-    notificationCooldowns.current = {};
+    lastNotificationTimeRef.current = 0;
+    isInitialFixRef.current = false;
     setUserLocation({ latitude: lat, longitude: lng });
     setIsTracking(true);
   };
